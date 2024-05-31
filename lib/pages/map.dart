@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -33,6 +34,27 @@ class _MyHomePageState extends State<MapPage> {
       _counter++;
     });
   }
+
+  late final customMarkers = <Marker>[
+    // buildPin(const LatLng(51.51868093513547, -0.12835376940892318)),
+    // buildPin(const LatLng(53.33360293799854, -6.284001062079881)),
+  ];
+
+  Marker buildPin(LatLng point) => Marker(
+        point: point,
+        width: 60,
+        height: 60,
+        child: GestureDetector(
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tapped existing marker'),
+              duration: Duration(seconds: 1),
+              showCloseIcon: true,
+            ),
+          ),
+          child: const Icon(Icons.location_pin, size: 30, color: Colors.black),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -74,14 +96,33 @@ class _MyHomePageState extends State<MapPage> {
             SizedBox(
               height: 800,
               child: FlutterMap(
-                options: const MapOptions(
-                  initialCenter: LatLng(37.48333, 21.65),
-                  initialZoom: 11.0,
+                options: MapOptions(
+                  initialCenter: const LatLng(37.48333, 21.65),
+                  initialZoom: 10.0,
+                  // onLongPress: (_, p) => setState(() => customMarkers.add(buildPin(p))),
+                  onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
+                  interactionOptions: const InteractionOptions(
+                    flags: ~InteractiveFlag.doubleTapZoom,
+                  ),
                 ),
                 children: [
                   TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.example.app',
+                  ),
+                  MarkerLayer(
+                    markers: customMarkers,
+                    // rotate: counterRotate,
+                    // markers: [
+                    //   Marker(
+                    //     width: 5.0,
+                    //     height: 5.0,
+                    //     point: LatLng(47.18664724067855, -1.5436768515939427),
+                    //     rotate: false,
+                    //     // child: ColoredBox(color: Colors.black),
+                    //     child: const Icon(Icons.location_pin, size: 30, color: Color.fromARGB(255, 235, 85, 4)),
+                    //   ),
+                    // ],
                   ),
                 ],
               ),
