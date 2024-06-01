@@ -17,6 +17,7 @@ class _MyHomePageState extends State<MapPage> {
   Position? _position;
 
   
+  // Should be placed in a separate file as a service
   void _getCurrentLocation() async {
     Position position = await _determinePosition();
     setState(() {
