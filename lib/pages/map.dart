@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MapPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-              height: 800,
+              height: 400,
               child: FlutterMap(
                 options: MapOptions(
                   initialCenter: const LatLng(37.48333, 21.65),
