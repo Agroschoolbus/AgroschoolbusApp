@@ -15,6 +15,7 @@ class MapPage extends StatefulWidget {
 
 class _MyHomePageState extends State<MapPage> {
   Position? _position;
+  LatLng? _currentPosition;
 
   final ButtonStyle b_style =
         ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
@@ -22,12 +23,15 @@ class _MyHomePageState extends State<MapPage> {
   // Should be placed in a separate file as a service
   void _getCurrentLocation() async {
     Position position = await _determinePosition();
+    print("xaxaxa");
     setState(() {
       _position = position;
-      // p = LatLng(_position.latitude, _position.longitude)
-      // if (_position != null) {
-      //   customMarkers.add(buildPin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble()));
-      // }
+      _currentPosition = LatLng(_position!.latitude, _position!.longitude);
+      print(_currentPosition);
+      if (_position != null) {
+        print(_currentPosition);
+        customMarkers.add(buildPin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble())));
+      }
     });
   }
 
@@ -101,7 +105,7 @@ class _MyHomePageState extends State<MapPage> {
             child: FlutterMap(
               options: MapOptions(
                 initialCenter: const LatLng(37.48333, 21.65),
-                initialZoom: 10.0,
+                initialZoom: 3.0,
                 
                 onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
                 interactionOptions: const InteractionOptions(
@@ -154,7 +158,7 @@ class _MyHomePageState extends State<MapPage> {
             ],
           ),
           
-          SizedBox(
+          const SizedBox(
             height: 50,
           )
         ],
