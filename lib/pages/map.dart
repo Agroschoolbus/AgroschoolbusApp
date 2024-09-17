@@ -16,12 +16,18 @@ class MapPage extends StatefulWidget {
 class _MyHomePageState extends State<MapPage> {
   Position? _position;
 
-  
+  final ButtonStyle b_style =
+        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+
   // Should be placed in a separate file as a service
   void _getCurrentLocation() async {
     Position position = await _determinePosition();
     setState(() {
-      _position = position; 
+      _position = position;
+      // p = LatLng(_position.latitude, _position.longitude)
+      // if (_position != null) {
+      //   customMarkers.add(buildPin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble()));
+      // }
     });
   }
 
@@ -86,43 +92,78 @@ class _MyHomePageState extends State<MapPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: _position != null? Text(_position.toString()): Text("No location info"),
+        title: Text("Interactive Map"),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: 400,
-              child: FlutterMap(
-                options: MapOptions(
-                  initialCenter: const LatLng(37.48333, 21.65),
-                  initialZoom: 10.0,
-                  
-                  onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
-                  interactionOptions: const InteractionOptions(
-                    flags: ~InteractiveFlag.doubleTapZoom,
-                  ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: FlutterMap(
+              options: MapOptions(
+                initialCenter: const LatLng(37.48333, 21.65),
+                initialZoom: 10.0,
+                
+                onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
+                interactionOptions: const InteractionOptions(
+                  flags: ~InteractiveFlag.doubleTapZoom,
                 ),
-                children: [
-                  TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.app',
-                  ),
-                  MarkerLayer(
-                    markers: customMarkers,
-                  ),
-                ],
               ),
+              children: [
+                TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.app',
+                ),
+                MarkerLayer(
+                  markers: customMarkers,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                flex:3,
+                child: Center(child: _position != null? Text(_position!.latitude.toString()): null)
+              ),
+              Expanded(
+                flex:3,
+                child: Center(child: _position != null? Text("Long: " + _position!.longitude.toString()): null)
+              )
+            ],
+          ),
+          Row(
+
+            children: [
+              
+              Expanded(
+                flex: 6,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+                  onPressed: _getCurrentLocation,
+                  child: const Text('Get location'),
+                ),
+              ),
+              // Expanded(
+              //   flex: 3,
+              //   child: OutlinedButton(
+              //     style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+              //     onPressed: null,
+              //     child: const Text('Enabled'),
+              //   ),
+              // ),
+            ],
+          ),
+          
+          SizedBox(
+            height: 50,
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _getCurrentLocation,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _getCurrentLocation,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
