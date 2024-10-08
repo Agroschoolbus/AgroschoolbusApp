@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MapPage> {
               showCloseIcon: true,
             ),
           ),
-          child: Icon(Icons.location_pin, size: 30, color: Theme.of(context).colorScheme.inversePrimary),
+          child: Icon(Icons.location_pin, size: 30, color: Theme.of(context).colorScheme.error),
         ),
       );
 
