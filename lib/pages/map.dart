@@ -23,13 +23,10 @@ class _MyHomePageState extends State<MapPage> {
   // Should be placed in a separate file as a service
   void _getCurrentLocation() async {
     Position position = await _determinePosition();
-    print("xaxaxa");
     setState(() {
       _position = position;
       _currentPosition = LatLng(_position!.latitude, _position!.longitude);
-      print(_currentPosition);
       if (_position != null) {
-        print(_currentPosition);
         customMarkers.add(buildPin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble())));
       }
     });
