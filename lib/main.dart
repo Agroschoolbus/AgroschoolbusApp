@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:agroschoolbus/pages/home.dart';
 import 'package:agroschoolbus/pages/map.dart';
+import 'package:agroschoolbus/pages/menu.dart';
+import 'package:agroschoolbus/pages/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +35,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const MapPage(title: 'Map Page'),
+      // home: const MapPage(title: 'Map Page'),
+      home: LoginPage(),
     );
   }
 }
