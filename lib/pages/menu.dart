@@ -45,7 +45,7 @@ class MenuPage extends StatelessWidget {
               },
               child: Text("Επεξεργασία προσωπικών στοιχείων"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 80, 121, 76),
+                backgroundColor: Color.fromARGB(255, 110, 154, 56),
                 foregroundColor: Color.fromARGB(255, 77, 77, 77),
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(
@@ -63,7 +63,7 @@ class MenuPage extends StatelessWidget {
               },
               child: Text("Επισήμανση θέσης σάκων"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 80, 121, 76),
+                backgroundColor: Color.fromARGB(255, 110, 154, 56),
                 foregroundColor: Color.fromARGB(255, 77, 77, 77),
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(
@@ -78,7 +78,7 @@ class MenuPage extends StatelessWidget {
               },
               child: Text("Δημιουργία/Διόρθωση μονοπατιού"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 80, 121, 76),
+                backgroundColor: Color.fromARGB(255, 110, 154, 56),
                 foregroundColor: Color.fromARGB(255, 77, 77, 77),
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(
@@ -93,7 +93,7 @@ class MenuPage extends StatelessWidget {
               },
               child: Text("Άλλο"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 80, 121, 76),
+                backgroundColor: Color.fromARGB(255, 110, 154, 56),
                 foregroundColor: Color.fromARGB(255, 77, 77, 77),
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(
@@ -108,7 +108,7 @@ class MenuPage extends StatelessWidget {
               },
               child: Text("Σάκοι προς συλλογή: 5"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 189, 164, 3),
+                backgroundColor: Color(0xefbe64),
                 foregroundColor: Color.fromARGB(255, 77, 77, 77),
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(

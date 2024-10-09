@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MapPage> {
         child: GestureDetector(
           onTap: () => ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Tapped existing marker'),
+              content: Text('Σάκος χρήστης με id 2'),
               duration: Duration(seconds: 1),
               showCloseIcon: true,
             ),
@@ -92,8 +92,7 @@ class _MyHomePageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Interactive Map"),
+        title: Text("Διαδραστικός χάρτης"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

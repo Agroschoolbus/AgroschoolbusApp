@@ -77,7 +77,7 @@ class LoginPage extends StatelessWidget {
                   child: Text("Είσοδος"),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Color.fromARGB(255, 80, 121, 76),
+                    backgroundColor: Color.fromARGB(255, 110, 154, 56),
                     foregroundColor: Color.fromARGB(255, 77, 77, 77),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
