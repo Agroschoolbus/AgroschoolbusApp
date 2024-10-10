@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:agroschoolbus/pages/menu.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
@@ -76,8 +79,8 @@ class LoginPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Color.fromARGB(255, 110, 154, 56),
-                    foregroundColor: Color.fromARGB(255, 77, 77, 77),
+                    backgroundColor: const Color.fromARGB(255, 110, 154, 56),
+                    foregroundColor: const Color.fromARGB(255, 77, 77, 77),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
                     ),
