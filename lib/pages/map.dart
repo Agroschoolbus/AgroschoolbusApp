@@ -3,6 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key, required this.title});
@@ -16,6 +19,7 @@ class MapPage extends StatefulWidget {
 class _MyHomePageState extends State<MapPage> {
   Position? _position;
   LatLng? _currentPosition;
+  LatLng? apiPosition;
 
   final ButtonStyle b_style =
         ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
@@ -26,7 +30,9 @@ class _MyHomePageState extends State<MapPage> {
     setState(() {
       _position = position;
       _currentPosition = LatLng(_position!.latitude, _position!.longitude);
+      apiPosition = LatLng(_position!.latitude, _position!.longitude);
       if (_position != null) {
+        customMarkers = <Marker>[];
         customMarkers.add(buildPin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble())));
       }
     });
@@ -70,7 +76,7 @@ class _MyHomePageState extends State<MapPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  late final customMarkers = <Marker>[];
+  late var customMarkers = <Marker>[];
 
   Marker buildPin(LatLng point) => Marker(
         point: point,
@@ -88,11 +94,48 @@ class _MyHomePageState extends State<MapPage> {
         ),
       );
 
+  void addSinglePin(LatLng point) {
+    setState(() {
+      customMarkers = <Marker>[];
+      customMarkers.add(buildPin(point));
+    });
+  }
+
+  Future<void> sendLocation(double latitude, double longitude) async {
+    var url = Uri.parse('http://147.102.160.160:8000/locations/add-location/'); // Update with your API endpoint
+
+    // Create the body of the request with latitude and longitude
+    Map<String, String> body = {
+      "latitude": double.parse(latitude.toStringAsFixed(6)).toString(),
+      "longitude": double.parse(longitude.toStringAsFixed(6)).toString(),
+    };
+
+    try {
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print('Success: $data');
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print('Error: ${response.body}');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Διαδραστικός χάρτης"),
+        title: Text("Επισήμανση θέσης σάκου"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -100,10 +143,11 @@ class _MyHomePageState extends State<MapPage> {
           Expanded(
             child: FlutterMap(
               options: MapOptions(
-                initialCenter: const LatLng(37.48333, 21.65),
-                initialZoom: 3.0,
+                initialCenter: const LatLng(37.4835, 21.6479),
+                initialZoom: 12.0,
                 
-                onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
+                // onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
+                onTap: (_, p) => addSinglePin(p),
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.doubleTapZoom,
                 ),
@@ -123,11 +167,11 @@ class _MyHomePageState extends State<MapPage> {
             children: [
               Expanded(
                 flex:3,
-                child: Center(child: _position != null? Text(_position!.latitude.toString()): null)
+                child: Center(child: customMarkers.isEmpty != true? Text(customMarkers.first.point.latitude.toString()): null)
               ),
               Expanded(
                 flex:3,
-                child: Center(child: _position != null? Text("Long: " + _position!.longitude.toString()): null)
+                child: Center(child: customMarkers.isEmpty != true? Text(customMarkers.first.point.longitude.toString()): null)
               )
             ],
           ),
@@ -140,7 +184,18 @@ class _MyHomePageState extends State<MapPage> {
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
                   onPressed: _getCurrentLocation,
-                  child: const Text('Get location'),
+                  child: const Text('Λήψη τοπεθεσίας GPS'),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+                  // onPressed: _getCurrentLocation,
+                  onPressed: customMarkers.isEmpty != true ? () {
+                    sendLocation(customMarkers.first.point.latitude, customMarkers.first.point.longitude);
+                  } : null,
+                  child: const Text('Αποστολή θέσης σάκου'),
                 ),
               ),
               // Expanded(
