@@ -27,11 +27,19 @@ class MenuPage extends StatelessWidget {
             SizedBox(height: 8.0),
 
             // Subtitle
-            Text(
-              "Κεντρική σελίδα της εφαρμογής. Τύπος χρήστη: Ελαιοπαραγωγός",
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.grey[700],
+
+            const Text.rich(
+              TextSpan(
+                text: 'Κεντρική σελίδα της εφαρμογής. Τύπος χρήστη: ', // Regular text
+                style: TextStyle(fontSize: 18.0, color: Color.fromARGB(255, 97, 97, 97),), // Default style
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Ελαιοπαραγωγός', 
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      ), // Bold text for "run"
+                  ),
+                ],
               ),
               textAlign: TextAlign.center,
             ),
@@ -119,15 +127,29 @@ class MenuPage extends StatelessWidget {
 
             SizedBox(height: 60.0),
 
-            // Text at the bottom
-            Text(
-              "Έχουν συλλεχθεί συνολικά 0 σάκοι",
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
+            
+
+
+            const Text.rich(
+                  TextSpan(
+                    text: 'Έχουν συλλεχθεί συνολικά ', // Regular text
+                    style: TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 117, 117, 117),), // Default style
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: '0', 
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          ), // Bold text for "run"
+                      ),
+                      TextSpan(
+                        text: ' σάκοι.', 
+                        style: TextStyle(
+                          ), // Bold text for "run"
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
           ],
         ),
       ),

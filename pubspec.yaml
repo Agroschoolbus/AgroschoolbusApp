@@ -56,10 +56,20 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 
+# flutter_launcher_icons:
+#   image_path: "assets/icons/agro_icon.png"
+#   remove_alpha_ios: true
+#   ios: true
+
 flutter_launcher_icons:
   image_path: "assets/icons/agro_icon.png"
+  android: "launcher_icon"
   remove_alpha_ios: true
   ios: true
+  min_sdk_android: 16 # android min sdk min:16, default 21
+  macos:
+    generate: true
+    image_path: "assets/icons/agro_icon.png"
   
 
 # The following section is specific to Flutter packages.

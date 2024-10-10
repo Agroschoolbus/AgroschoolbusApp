@@ -23,7 +23,7 @@ class LoginPage extends StatelessWidget {
                 
 
                 // Text below the icon
-                Text(
+                const Text(
                   "Agroschoolbus",
                   style: TextStyle(
                     fontSize: 28.0,
@@ -31,8 +31,8 @@ class LoginPage extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 40.0),
-                Text(
+                const SizedBox(height: 40.0),
+                const Text(
                   "Πραγματοποιείστε είσοδο για να συνεχίσετε.",
                   style: TextStyle(
                     fontSize: 14.0,
@@ -40,10 +40,10 @@ class LoginPage extends StatelessWidget {
                   ),
                   textAlign: TextAlign.left,
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
 
                 // Email TextField
-                TextField(
+                const TextField(
                   decoration: InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
@@ -52,10 +52,10 @@ class LoginPage extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                 ),
 
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
 
                 // Password TextField
-                TextField(
+                const TextField(
                   decoration: InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
@@ -64,7 +64,7 @@ class LoginPage extends StatelessWidget {
                   obscureText: true,
                 ),
 
-                SizedBox(height: 24.0),
+                const SizedBox(height: 24.0),
 
                 // Login Button
                 ElevatedButton(
@@ -74,28 +74,39 @@ class LoginPage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => MenuPage()),
                     );
                   },
-                  child: Text("Είσοδος"),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     backgroundColor: Color.fromARGB(255, 110, 154, 56),
                     foregroundColor: Color.fromARGB(255, 77, 77, 77),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
                     ),
                   ),
+                  child: const Text("Είσοδος"),
+                  
                 ),
 
-                SizedBox(height: 60.0),
+                const SizedBox(height: 60.0),
 
-                // Bottom Text
-                Text(
-                  "Αν δεν έχετε λογαριασμό, μπορείτε να κάνετε εγγραφή.",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.grey[600],
+                
+
+                const Text.rich(
+                  TextSpan(
+                    text: 'Αν δεν έχετε λογαριασμό, μπορείτε να κάνετε ', // Regular text
+                    style: TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 117, 117, 117),), // Default style
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: 'εγγραφή', 
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          ), // Bold text for "run"
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.left,
                 ),
+
+
               ],
             ),
           ),
