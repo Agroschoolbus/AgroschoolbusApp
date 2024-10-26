@@ -23,6 +23,7 @@ class _MyHomePageState extends State<MapPage> {
   final String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
 
   int option = 1;
+  String pageText='';
   Map<String, String> query = {
     'user': '',
     'status': '',
@@ -132,12 +133,14 @@ class _MyHomePageState extends State<MapPage> {
   void setShowOption(int opt) {
     option = opt;
     if (opt == 1) {
+      pageText = "Στον χάρτη παρουσιάζονται όλα τα δοχεία συλλογής";
       query['user'] = '';
       query['status'] = '';
       query['created_at__gte'] = '';
       query['created_at__lte'] = '';
     }
     if (opt == 2) {
+      pageText = "Στον χάρτη παρουσιάζονται όλα τα σημερινά δοχεία συλλογής";
       DateTime today = DateTime.now();
       String queryToday = getToday(today);
       String queryTomorrow = getTomorrow(today);
@@ -147,6 +150,7 @@ class _MyHomePageState extends State<MapPage> {
       query['created_at__lte'] = queryTomorrow;
     }
     if (opt == 3) {
+      pageText = "Στον χάρτη παρουσιάζονται όλα τα σημερινά, μη συλλεχθέντα δοχεία συλλογής";
       DateTime today = DateTime.now();
       String queryToday = getToday(today);
       String queryTomorrow = getTomorrow(today); 
@@ -179,6 +183,11 @@ class _MyHomePageState extends State<MapPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          Row(
+            children: [
+              Expanded(child: Text(pageText)),
+            ],
+          ),
           Expanded(
             child: FutureBuilder<List<Marker>>(
               future: customMarkers,
