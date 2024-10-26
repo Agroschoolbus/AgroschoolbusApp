@@ -74,10 +74,10 @@ class _MyHomePageState extends State<MapPage> {
           final status = item['status'].toString();  // Assuming 'id' is in the JSON
           
           if (status == 'true') {
-            pinColor = Color.fromARGB(255, 46, 135, 1);
+            pinColor = const Color.fromARGB(255, 46, 135, 1);
           }
           else {
-            pinColor = Color.fromARGB(255, 201, 4, 4);
+            pinColor = const Color.fromARGB(255, 201, 4, 4);
           }
           LatLng latLng = LatLng(latitude, longitude);
           return buildPin(latLng, pinColor);
@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MapPage> {
     super.initState();
     // Call the fetchMarkers method when the page gets initiated
     customMarkers = fetchLatLngPoints();
-    _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
+    _timer = Timer.periodic(const Duration(minutes: 1), (Timer t) {
       _fetchAndSetMarkers(); // Fetch markers every minute
     });
   }
@@ -109,6 +109,24 @@ class _MyHomePageState extends State<MapPage> {
     setState(() {
       customMarkers = fetchLatLngPoints();
     });
+  }
+  
+  String getToday(DateTime today) {
+    String todayYear = today.year.toString();
+    String todayMonth = today.month.toString();
+    String todayDay = (today.day - 1).toString();
+    String queryToday = "$todayYear-$todayMonth-$todayDay";
+
+    return queryToday;
+  }
+
+  String getTomorrow(DateTime today) {
+    String tomorrowYear = today.year.toString();
+    String tomorrowMonth = today.month.toString();
+    String tomorrowDay = (today.day + 1).toString();
+    String queryTomorrow = "$tomorrowYear-$tomorrowMonth-$tomorrowDay";
+
+    return queryTomorrow;
   }
 
   void setShowOption(int opt) {
@@ -121,8 +139,8 @@ class _MyHomePageState extends State<MapPage> {
     }
     if (opt == 2) {
       DateTime today = DateTime.now();
-      String queryToday = today.year.toString() + '-' + today.month.toString() + '-' + (today.day - 1).toString(); 
-      String queryTomorrow = today.year.toString() + '-' + today.month.toString() + '-' + (today.day + 1).toString(); 
+      String queryToday = getToday(today);
+      String queryTomorrow = getTomorrow(today);
       query['user'] = '';
       query['status'] = '';
       query['created_at__gte'] = queryToday;
@@ -130,8 +148,8 @@ class _MyHomePageState extends State<MapPage> {
     }
     if (opt == 3) {
       DateTime today = DateTime.now();
-      String queryToday = today.year.toString() + '-' + today.month.toString() + '-' + (today.day - 1).toString(); 
-      String queryTomorrow = today.year.toString() + '-' + today.month.toString() + '-' + (today.day + 1).toString(); 
+      String queryToday = getToday(today);
+      String queryTomorrow = getTomorrow(today); 
       query['user'] = '';
       query['status'] = 'False';
       query['created_at__gte'] = queryToday;
@@ -228,14 +246,6 @@ class _MyHomePageState extends State<MapPage> {
                 ),
               ),
               
-              // Expanded(
-              //   flex: 3,
-              //   child: OutlinedButton(
-              //     style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-              //     onPressed: null,
-              //     child: const Text('Enabled'),
-              //   ),
-              // ),
             ],
           ),
           
