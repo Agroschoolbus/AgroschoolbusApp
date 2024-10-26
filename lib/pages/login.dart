@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agroschoolbus/pages/menu.dart';
+import 'package:agroschoolbus/pages/map.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -74,7 +74,7 @@ class LoginPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MenuPage()),
+                      MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
                     );
                   },
                   style: ElevatedButton.styleFrom(
