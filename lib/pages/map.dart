@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -17,16 +17,21 @@ class MapPage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MapPage> {
-  LatLng? apiPosition;
-
-  final ButtonStyle b_style =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
-
-  
 
   late Future<List<Marker>> customMarkers;
+  Timer? _timer;
+  final String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
 
-  Marker buildPin(LatLng point) => Marker(
+  int option = 1;
+  Map<String, String> query = {
+    'user': '',
+    'status': '',
+    'created_at__gte': '',
+    'created_at__lte': ''
+  };
+
+
+  Marker buildPin(LatLng point, Color pinColor) => Marker(
         point: point,
         width: 60,
         height: 60,
@@ -38,19 +43,18 @@ class _MyHomePageState extends State<MapPage> {
               showCloseIcon: true,
             ),
           ),
-          child: Icon(Icons.location_pin, size: 30, color: Theme.of(context).colorScheme.error),
+          child: Icon(Icons.location_pin, size: 30, color: pinColor),
         ),
       );
-
-
-  
-  final String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
 
   Future<List<Marker>> fetchLatLngPoints() async {
     try {
       final uri = Uri.parse(baseUrl).replace(
         queryParameters: {
-          'status': 'False',
+          'status': query['status'],
+          'user': query['user'],
+          'created_at__gte': query['created_at__gte'],
+          'created_at__lte': query['created_at__lte']
         },
       );
       // final response = await http.get(Uri.parse(baseUrl));
@@ -63,11 +67,20 @@ class _MyHomePageState extends State<MapPage> {
         
         // Map each item to a Marker using latitude and longitude
         List<Marker> markers = data.map((item) {
+          Color pinColor;
+
           final latitude = double.parse(item['latitude']);
           final longitude = double.parse(item['longitude']);
-          final id = item['id'].toString();  // Assuming 'id' is in the JSON
+          final status = item['status'].toString();  // Assuming 'id' is in the JSON
+          
+          if (status == 'true') {
+            pinColor = Color.fromARGB(255, 46, 135, 1);
+          }
+          else {
+            pinColor = Color.fromARGB(255, 201, 4, 4);
+          }
           LatLng latLng = LatLng(latitude, longitude);
-          return buildPin(latLng);
+          return buildPin(latLng, pinColor);
         }).toList();
 
         return markers;
@@ -87,15 +100,64 @@ class _MyHomePageState extends State<MapPage> {
     super.initState();
     // Call the fetchMarkers method when the page gets initiated
     customMarkers = fetchLatLngPoints();
-    
+    _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
+      _fetchAndSetMarkers(); // Fetch markers every minute
+    });
+  }
+
+  void _fetchAndSetMarkers() {
+    setState(() {
+      customMarkers = fetchLatLngPoints();
+    });
+  }
+
+  void setShowOption(int opt) {
+    option = opt;
+    if (opt == 1) {
+      query['user'] = '';
+      query['status'] = '';
+      query['created_at__gte'] = '';
+      query['created_at__lte'] = '';
+    }
+    if (opt == 2) {
+      DateTime today = DateTime.now();
+      String queryToday = today.year.toString() + '-' + today.month.toString() + '-' + (today.day - 1).toString(); 
+      String queryTomorrow = today.year.toString() + '-' + today.month.toString() + '-' + (today.day + 1).toString(); 
+      query['user'] = '';
+      query['status'] = '';
+      query['created_at__gte'] = queryToday;
+      query['created_at__lte'] = queryTomorrow;
+    }
+    if (opt == 3) {
+      DateTime today = DateTime.now();
+      String queryToday = today.year.toString() + '-' + today.month.toString() + '-' + (today.day - 1).toString(); 
+      String queryTomorrow = today.year.toString() + '-' + today.month.toString() + '-' + (today.day + 1).toString(); 
+      query['user'] = '';
+      query['status'] = 'False';
+      query['created_at__gte'] = queryToday;
+      query['created_at__lte'] = queryTomorrow;
+    }
+    _fetchAndSetMarkers();
+  }
+
+  void changeQuery() {
+    setState(() {
+      _fetchAndSetMarkers();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when widget is disposed
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Επισήμανση θέσης σάκου"),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Επισήμανση θέσης σάκου"),
+      // ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -104,24 +166,21 @@ class _MyHomePageState extends State<MapPage> {
               future: customMarkers,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No markers found'));
+                  return const Center(child: Text('No markers found'));
                 } else {
                   // Extract the LatLng points from the snapshot
                   final List<Marker> markers = snapshot.data!;
 
                   return FlutterMap(
                     
-                    options: MapOptions(
-                      initialCenter: const LatLng(37.4835, 21.6479),
+                    options: const MapOptions(
+                      initialCenter: LatLng(37.4835, 21.6479),
                       initialZoom: 12.0,
-                      
-                      // onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
-                      // onTap: (_, p) => addSinglePin(p),
-                      interactionOptions: const InteractionOptions(
+                      interactionOptions: InteractionOptions(
                         flags: ~InteractiveFlag.doubleTapZoom,
                       ),
                     ),
@@ -148,8 +207,24 @@ class _MyHomePageState extends State<MapPage> {
                 flex: 6,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: fetchLatLngPoints,
-                  child: const Text('Test'),
+                  onPressed: () => setShowOption(1),
+                  child: const Text('Όλα τα δοχεία'),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+                  onPressed: () => setShowOption(2),
+                  child: const Text('Σημερινά δοχεία'),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+                  onPressed: () => setShowOption(3),
+                  child: const Text('Μη συλλεχθέντα σημερινά δοχεία'),
                 ),
               ),
               
