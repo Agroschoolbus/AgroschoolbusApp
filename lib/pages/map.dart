@@ -3,8 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api.dart';
 
 
 class MapPage extends StatefulWidget {
@@ -20,87 +19,15 @@ class _MyHomePageState extends State<MapPage> {
 
   late Future<List<Marker>> customMarkers;
   Timer? _timer;
-  final String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
-
-  int option = 1;
-  String pageText='';
-  Map<String, String> query = {
-    'user': '',
-    'status': '',
-    'created_at__gte': '',
-    'created_at__lte': ''
-  };
-
-
-  Marker buildPin(LatLng point, Color pinColor) => Marker(
-        point: point,
-        width: 60,
-        height: 60,
-        child: GestureDetector(
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Σάκος χρήστης με id 2'),
-              duration: Duration(seconds: 1),
-              showCloseIcon: true,
-            ),
-          ),
-          child: Icon(Icons.location_pin, size: 30, color: pinColor),
-        ),
-      );
-
-  Future<List<Marker>> fetchLatLngPoints() async {
-    try {
-      final uri = Uri.parse(baseUrl).replace(
-        queryParameters: {
-          'status': query['status'],
-          'user': query['user'],
-          'created_at__gte': query['created_at__gte'],
-          'created_at__lte': query['created_at__lte']
-        },
-      );
-      // final response = await http.get(Uri.parse(baseUrl));
-      final response = await http.get(uri);
-
-      // Check if request was successful
-      if (response.statusCode == 200) {
-        // Decode the JSON data
-        final List<dynamic> data = json.decode(response.body);
-        
-        // Map each item to a Marker using latitude and longitude
-        List<Marker> markers = data.map((item) {
-          Color pinColor;
-
-          final latitude = double.parse(item['latitude']);
-          final longitude = double.parse(item['longitude']);
-          final status = item['status'].toString();  // Assuming 'id' is in the JSON
-          
-          if (status == 'true') {
-            pinColor = const Color.fromARGB(255, 46, 135, 1);
-          }
-          else {
-            pinColor = const Color.fromARGB(255, 201, 4, 4);
-          }
-          LatLng latLng = LatLng(latitude, longitude);
-          return buildPin(latLng, pinColor);
-        }).toList();
-
-        return markers;
-        
-        // Map each item to LatLng and return as a List
-        // return data.map((item) => LatLng.fromJson(item)).toList();
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (error) {
-      throw Exception('Failed to connect to the API: $error');
-    }
-  }
+  late API _api;
+  
 
   @override
-  void initState() {
-    super.initState();
-    // Call the fetchMarkers method when the page gets initiated
-    customMarkers = fetchLatLngPoints();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _api = API(context: context);
+    customMarkers = _api.fetchLatLngPoints();
     _timer = Timer.periodic(const Duration(minutes: 1), (Timer t) {
       _fetchAndSetMarkers(); // Fetch markers every minute
     });
@@ -108,58 +35,15 @@ class _MyHomePageState extends State<MapPage> {
 
   void _fetchAndSetMarkers() {
     setState(() {
-      customMarkers = fetchLatLngPoints();
+      customMarkers = _api.fetchLatLngPoints();
     });
   }
-  
-  String getToday(DateTime today) {
-    String todayYear = today.year.toString();
-    String todayMonth = today.month.toString();
-    String todayDay = (today.day - 1).toString();
-    String queryToday = "$todayYear-$todayMonth-$todayDay";
 
-    return queryToday;
-  }
-
-  String getTomorrow(DateTime today) {
-    String tomorrowYear = today.year.toString();
-    String tomorrowMonth = today.month.toString();
-    String tomorrowDay = (today.day + 1).toString();
-    String queryTomorrow = "$tomorrowYear-$tomorrowMonth-$tomorrowDay";
-
-    return queryTomorrow;
-  }
-
-  void setShowOption(int opt) {
-    option = opt;
-    if (opt == 1) {
-      pageText = "Στον χάρτη παρουσιάζονται όλα τα δοχεία συλλογής";
-      query['user'] = '';
-      query['status'] = '';
-      query['created_at__gte'] = '';
-      query['created_at__lte'] = '';
-    }
-    if (opt == 2) {
-      pageText = "Στον χάρτη παρουσιάζονται όλα τα σημερινά δοχεία συλλογής";
-      DateTime today = DateTime.now();
-      String queryToday = getToday(today);
-      String queryTomorrow = getTomorrow(today);
-      query['user'] = '';
-      query['status'] = '';
-      query['created_at__gte'] = queryToday;
-      query['created_at__lte'] = queryTomorrow;
-    }
-    if (opt == 3) {
-      pageText = "Στον χάρτη παρουσιάζονται όλα τα σημερινά, μη συλλεχθέντα δοχεία συλλογής";
-      DateTime today = DateTime.now();
-      String queryToday = getToday(today);
-      String queryTomorrow = getTomorrow(today); 
-      query['user'] = '';
-      query['status'] = 'False';
-      query['created_at__gte'] = queryToday;
-      query['created_at__lte'] = queryTomorrow;
-    }
-    _fetchAndSetMarkers();
+  void _setShowOption(int opt) {
+    setState(() {
+      _api.setShowOption(opt);
+      customMarkers = _api.fetchLatLngPoints();
+    });
   }
 
   void changeQuery() {
@@ -185,7 +69,7 @@ class _MyHomePageState extends State<MapPage> {
         children: [
           Row(
             children: [
-              Expanded(child: Text(pageText)),
+              Expanded(child: Text(_api.pageText)),
             ],
           ),
           Expanded(
@@ -234,7 +118,7 @@ class _MyHomePageState extends State<MapPage> {
                 flex: 6,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: () => setShowOption(1),
+                  onPressed: () => _setShowOption(1),
                   child: const Text('Όλα τα δοχεία'),
                 ),
               ),
@@ -242,7 +126,7 @@ class _MyHomePageState extends State<MapPage> {
                 flex: 6,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: () => setShowOption(2),
+                  onPressed: () => _setShowOption(2),
                   child: const Text('Σημερινά δοχεία'),
                 ),
               ),
@@ -250,7 +134,7 @@ class _MyHomePageState extends State<MapPage> {
                 flex: 6,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: () => setShowOption(3),
+                  onPressed: () => _setShowOption(3),
                   child: const Text('Μη συλλεχθέντα σημερινά δοχεία'),
                 ),
               ),
@@ -260,14 +144,10 @@ class _MyHomePageState extends State<MapPage> {
           
           const SizedBox(
             height: 50,
-          )
+          ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _getCurrentLocation,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
