@@ -18,7 +18,7 @@ class API {
 
   API({required this.context});
 
-  Marker buildPin(LatLng point, Color pinColor, ) => Marker(
+  Marker buildPin(LatLng point, Color pinColor, String buckets) => Marker(
     point: point,
     width: 60,
     height: 60,
@@ -30,7 +30,27 @@ class API {
           showCloseIcon: true,
         ),
       ),
-      child: Icon(Icons.location_pin, size: 30, color: pinColor),
+      child: 
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              buckets,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white.withOpacity(0.7),
+              ),
+            ),
+            Icon(
+              Icons.location_pin,
+              size: 30,
+              color: pinColor,
+            ),
+          ],
+        ),
+      // Icon(Icons.location_pin, size: 30, color: pinColor),
     ),
   );
 
@@ -58,6 +78,15 @@ class API {
           final latitude = double.parse(item['latitude']);
           final longitude = double.parse(item['longitude']);
           final status = item['status'].toString();
+          final int buckets = item['buckets'];
+          final int user = item['user'];
+
+          String buck = "";
+          if (buckets < 2) {
+            buck = user.toString() + " - 1 Κάδος";
+          } else {
+            buck = user.toString() + " - " + buckets.toString() + " κάδοι";
+          }
           
           if (status == 'true') {
             pinColor = const Color.fromARGB(255, 46, 135, 1);
@@ -66,7 +95,7 @@ class API {
             pinColor = const Color.fromARGB(255, 201, 4, 4);
           }
           LatLng latLng = LatLng(latitude, longitude);
-          return buildPin(latLng, pinColor);
+          return buildPin(latLng, pinColor, buck);
         }).toList();
 
         return markers;
