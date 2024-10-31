@@ -1,4 +1,4 @@
-# AgroSchoolBus
+# AgroSchoolBus - Transporter App
 
 Application for organizing the collection of olive fruit.
 
