@@ -1,10 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:agroschoolbus/pages/menu.dart';
+import 'package:agroschoolbus/pages/map.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passController = TextEditingController();
+
+
+  void _getInput() {
+    // Get the text from the TextEditingController
+    String inputEmail = emailController.text;
+    String inputPass = passController.text;
+    if (inputEmail == "itzortzis" && inputPass == "password") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
+      );
+    }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Μη αποδεκτά στοιχεία εισόδου. Προσπαθήστε ξανά.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
@@ -43,8 +77,9 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 8.0),
 
                 // Email TextField
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
@@ -55,8 +90,9 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 16.0),
 
                 // Password TextField
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: passController,
+                  decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
@@ -69,15 +105,12 @@ class LoginPage extends StatelessWidget {
                 // Login Button
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MenuPage()),
-                    );
+                    _getInput();
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Color.fromARGB(255, 110, 154, 56),
-                    foregroundColor: Color.fromARGB(255, 77, 77, 77),
+                    backgroundColor: const Color.fromARGB(255, 110, 154, 56),
+                    foregroundColor: const Color.fromARGB(255, 77, 77, 77),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
                     ),

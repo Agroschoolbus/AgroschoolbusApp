@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
+import 'dart:async';
+
+import '../services/api.dart';
 
 
 class MapPage extends StatefulWidget {
@@ -14,123 +16,100 @@ class MapPage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MapPage> {
-  Position? _position;
-  LatLng? _currentPosition;
 
-  final ButtonStyle b_style =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+  late Future<List<Marker>> customMarkers;
+  Timer? _timer;
+  late API _api;
+  
 
-  // Should be placed in a separate file as a service
-  void _getCurrentLocation() async {
-    Position position = await _determinePosition();
-    setState(() {
-      _position = position;
-      _currentPosition = LatLng(_position!.latitude, _position!.longitude);
-      if (_position != null) {
-        customMarkers.add(buildPin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble())));
-      }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _api = API(context: context);
+    customMarkers = _api.fetchLatLngPoints();
+    _timer = Timer.periodic(const Duration(minutes: 1), (Timer t) {
+      _fetchAndSetMarkers(); // Fetch markers every minute
     });
   }
 
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the 
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale 
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-    
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately. 
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.');
-    } 
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
+  void _fetchAndSetMarkers() {
+    setState(() {
+      customMarkers = _api.fetchLatLngPoints();
+    });
   }
 
-  late final customMarkers = <Marker>[];
+  void _setShowOption(int opt) {
+    setState(() {
+      _api.setShowOption(opt);
+      customMarkers = _api.fetchLatLngPoints();
+    });
+  }
 
-  Marker buildPin(LatLng point) => Marker(
-        point: point,
-        width: 60,
-        height: 60,
-        child: GestureDetector(
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Σάκος χρήστης με id 2'),
-              duration: Duration(seconds: 1),
-              showCloseIcon: true,
-            ),
-          ),
-          child: Icon(Icons.location_pin, size: 30, color: Theme.of(context).colorScheme.error),
-        ),
-      );
+  void changeQuery() {
+    setState(() {
+      _fetchAndSetMarkers();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when widget is disposed
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Διαδραστικός χάρτης"),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Επισήμανση θέσης σάκου"),
+      // ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Expanded(
-            child: FlutterMap(
-              options: MapOptions(
-                initialCenter: const LatLng(37.48333, 21.65),
-                initialZoom: 3.0,
-                
-                onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
-                interactionOptions: const InteractionOptions(
-                  flags: ~InteractiveFlag.doubleTapZoom,
-                ),
-              ),
-              children: [
-                TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.example.app',
-                ),
-                MarkerLayer(
-                  markers: customMarkers,
-                ),
-              ],
-            ),
-          ),
           Row(
             children: [
-              Expanded(
-                flex:3,
-                child: Center(child: _position != null? Text(_position!.latitude.toString()): null)
-              ),
-              Expanded(
-                flex:3,
-                child: Center(child: _position != null? Text("Long: " + _position!.longitude.toString()): null)
-              )
+              Expanded(child: Text(_api.pageText)),
             ],
           ),
+          Expanded(
+            child: FutureBuilder<List<Marker>>(
+              future: customMarkers,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No markers found'));
+                } else {
+                  // Extract the LatLng points from the snapshot
+                  final List<Marker> markers = snapshot.data!;
+
+                  return FlutterMap(
+                    
+                    options: const MapOptions(
+                      initialCenter: LatLng(37.4835, 21.6479),
+                      initialZoom: 12.0,
+                      interactionOptions: InteractionOptions(
+                        flags: ~InteractiveFlag.doubleTapZoom,
+                      ),
+                    ),
+                    children: [
+                      TileLayer(
+                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.example.app',
+                      ),
+                      MarkerLayer(
+                        markers: markers,
+                      ),
+                    ],
+                  );
+                }
+              }
+            ),
+          ),
+          
           Row(
 
             children: [
@@ -139,31 +118,36 @@ class _MyHomePageState extends State<MapPage> {
                 flex: 6,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: _getCurrentLocation,
-                  child: const Text('Get location'),
+                  onPressed: () => _setShowOption(1),
+                  child: const Text('Όλα τα δοχεία'),
                 ),
               ),
-              // Expanded(
-              //   flex: 3,
-              //   child: OutlinedButton(
-              //     style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-              //     onPressed: null,
-              //     child: const Text('Enabled'),
-              //   ),
-              // ),
+              Expanded(
+                flex: 6,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+                  onPressed: () => _setShowOption(2),
+                  child: const Text('Σημερινά δοχεία'),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
+                  onPressed: () => _setShowOption(3),
+                  child: const Text('Μη συλλεχθέντα σημερινά δοχεία'),
+                ),
+              ),
+              
             ],
           ),
           
           const SizedBox(
             height: 50,
-          )
+          ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _getCurrentLocation,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
