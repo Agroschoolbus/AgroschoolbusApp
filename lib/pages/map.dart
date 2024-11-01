@@ -3,6 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../services/api.dart';
 
 
@@ -17,46 +20,148 @@ class MapPage extends StatefulWidget {
 
 class _MyHomePageState extends State<MapPage> {
 
-  late Future<List<Marker>> customMarkers;
+  List<Marker> customMarkers = [];
   Timer? _timer;
   late API _api;
+  Map<LatLng, Color> markerColors = {};
+  Map<LatLng, String> markerBuckets = {};
   
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
     _api = API(context: context);
-    customMarkers = _api.fetchLatLngPoints();
-    _timer = Timer.periodic(const Duration(minutes: 1), (Timer t) {
-      _fetchAndSetMarkers(); // Fetch markers every minute
-    });
+    fetchLatLngPoints();
+    
   }
 
-  void _fetchAndSetMarkers() {
+  void buildMarkers() {
     setState(() {
-      customMarkers = _api.fetchLatLngPoints();
+      customMarkers = customMarkers.map((marker) {
+        return buildPin(marker.point);
+      }).toList();
     });
+    
+  }
+
+  void changeMarkerColor(LatLng point) {
+    
+      if (markerColors[point] == const Color.fromARGB(255, 201, 4, 4)) {
+        markerColors[point] = Color.fromARGB(255, 21, 13, 253);
+      } else if (markerColors[point] == const Color.fromARGB(255, 21, 13, 253)) {
+        markerColors[point] = Color.fromARGB(255, 201, 4, 4);
+      }
+      
+      buildMarkers();
+    
+  }
+
+  Marker buildPin(LatLng point) => Marker(
+    point: point,
+    width: 60,
+    height: 60,
+    child: GestureDetector(
+      onTap: () {
+        
+        changeMarkerColor(point);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Σάκος χρήστης με id 2'),
+            duration: Duration(seconds: 1),
+            showCloseIcon: true,
+          ),
+        );
+      },
+      child: 
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${markerBuckets[point]}',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white.withOpacity(0.7),
+              ),
+            ),
+            Icon(
+              Icons.location_pin,
+              size: 30,
+              color: markerColors[point],
+            ),
+          ],
+        ),
+      // Icon(Icons.location_pin, size: 30, color: pinColor),
+    ),
+  );
+
+  void fetchLatLngPoints() async {
+    const String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
+
+    try {
+      final uri = Uri.parse(baseUrl).replace(
+        queryParameters: {
+          'status': _api.query['status'],
+          'user': _api.query['user'],
+          'created_at__gte': _api.query['created_at__gte'],
+          'created_at__lte': _api.query['created_at__lte']
+        },
+      );
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        
+        setState(() {
+          
+        
+        customMarkers = data.map((item) {
+
+            final latitude = double.parse(item['latitude']);
+            final longitude = double.parse(item['longitude']);
+            final status = item['status'].toString();
+            final int buckets = item['buckets'];
+            final int user = item['user'];
+
+            String buck = "";
+            if (buckets < 2) {
+              buck = user.toString() + " - 1 Κάδος";
+            } else {
+              buck = user.toString() + " - " + buckets.toString() + " κάδοι";
+            }
+            LatLng latLng = LatLng(latitude, longitude);
+            if (status == 'true') {
+              markerColors[latLng] = const Color.fromARGB(255, 46, 135, 1);
+            }
+            else {
+              markerColors[latLng] = const Color.fromARGB(255, 201, 4, 4);
+            }
+            markerBuckets[latLng] = buck;
+            return buildPin(latLng);
+          }).toList();
+        });
+        // return markers;
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      throw Exception('Failed to connect to the API: $error');
+    }
   }
 
   void _setShowOption(int opt) {
-    setState(() {
-      _api.setShowOption(opt);
-      customMarkers = _api.fetchLatLngPoints();
-    });
+    _api.setShowOption(opt);
+    fetchLatLngPoints();
   }
 
-  void changeQuery() {
-    setState(() {
-      _fetchAndSetMarkers();
-    });
-  }
 
-  @override
-  void dispose() {
-    _timer?.cancel(); // Cancel the timer when widget is disposed
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // _timer?.cancel(); // Cancel the timer when widget is disposed
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -73,20 +178,7 @@ class _MyHomePageState extends State<MapPage> {
             ],
           ),
           Expanded(
-            child: FutureBuilder<List<Marker>>(
-              future: customMarkers,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No markers found'));
-                } else {
-                  // Extract the LatLng points from the snapshot
-                  final List<Marker> markers = snapshot.data!;
-
-                  return FlutterMap(
+            child: FlutterMap(
                     
                     options: const MapOptions(
                       initialCenter: LatLng(37.4835, 21.6479),
@@ -101,13 +193,10 @@ class _MyHomePageState extends State<MapPage> {
                           userAgentPackageName: 'com.example.app',
                       ),
                       MarkerLayer(
-                        markers: markers,
+                        markers: customMarkers,
                       ),
                     ],
-                  );
-                }
-              }
-            ),
+                  )
           ),
           
           Row(

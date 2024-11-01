@@ -16,22 +16,26 @@ class _LoginPageState extends State<LoginPage> {
 
   void _getInput() {
     // Get the text from the TextEditingController
-    String inputEmail = emailController.text;
-    String inputPass = passController.text;
-    if (inputEmail == "itzortzis" && inputPass == "password") {
-      Navigator.push(
+    Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
       );
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Μη αποδεκτά στοιχεία εισόδου. Προσπαθήστε ξανά.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
+    // String inputEmail = emailController.text;
+    // String inputPass = passController.text;
+    // if (inputEmail == "itzortzis" && inputPass == "password") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
+    //   );
+    // }
+    // else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Μη αποδεκτά στοιχεία εισόδου. Προσπαθήστε ξανά.'),
+    //       duration: Duration(seconds: 2),
+    //     ),
+    //   );
+    // }
     
   }
 
