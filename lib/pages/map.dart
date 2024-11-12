@@ -24,8 +24,8 @@ class _MyHomePageState extends State<MapPage> {
   List<Marker> customMarkers = [];
   Timer? _timer;
   late API _api;
-  Map<LatLng, Color> markerColors = {};
-  Map<LatLng, String> markerBuckets = {};
+  // Map<LatLng, Color> markerColors = {};
+  // Map<LatLng, String> markerBuckets = {};
   
 
   @override
@@ -37,10 +37,15 @@ class _MyHomePageState extends State<MapPage> {
     
   }
 
+  void tapHandler(LatLng markerPoint, Color markerColor) {
+    print(markerColor);
+    print(markerPoint);
 
-  Marker buildPin(LatLng point) {
-    Color color = markerColors[point] ?? const Color.fromARGB(255, 201, 4, 4);
-    String bucketInfo = markerBuckets[point] ?? '';
+  }
+
+
+  Marker buildPin(LatLng point, int bucketInfo, int user, String status) {
+    
 
     return Marker(
       point: point,
@@ -48,12 +53,13 @@ class _MyHomePageState extends State<MapPage> {
       height: 60,
       child: CustomMarker(
         point: point,
-        initialColor: color,
-        bucketInfo: bucketInfo,
+        userId: user,
+        status: status,
+        buckets: bucketInfo,
         onColorChange: (Color newColor) {
-          setState(() {
-            markerColors[point] = newColor; // Update the color in the main state
-          });
+          
+            tapHandler(point, newColor); // Update the color in the main state
+          
         },
       ),
     );
@@ -88,21 +94,9 @@ class _MyHomePageState extends State<MapPage> {
             final int buckets = item['buckets'];
             final int user = item['user'];
 
-            String buck = "";
-            if (buckets < 2) {
-              buck = user.toString() + " - 1 Κάδος";
-            } else {
-              buck = user.toString() + " - " + buckets.toString() + " κάδοι";
-            }
             LatLng latLng = LatLng(latitude, longitude);
-            if (status == 'true') {
-              markerColors[latLng] = const Color.fromARGB(255, 46, 135, 1);
-            }
-            else {
-              markerColors[latLng] = const Color.fromARGB(255, 201, 4, 4);
-            }
-            markerBuckets[latLng] = buck;
-            return buildPin(latLng);
+            
+            return buildPin(latLng, buckets, user, status);
           }).toList();
         });
         // return markers;

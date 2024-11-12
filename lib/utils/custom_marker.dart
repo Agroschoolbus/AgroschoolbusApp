@@ -5,15 +5,17 @@ import 'package:latlong2/latlong.dart';
 
 class CustomMarker extends StatefulWidget {
   final LatLng point;
-  final Color initialColor;
-  final String bucketInfo;
+  final int buckets;
+  final int userId;
+  final String status;
   final Function(Color) onColorChange;
 
   const CustomMarker({
     Key? key,
     required this.point,
-    required this.initialColor,
-    required this.bucketInfo,
+    required this.buckets,
+    required this.userId,
+    required this.status,
     required this.onColorChange,
   }) : super(key: key);
 
@@ -23,12 +25,33 @@ class CustomMarker extends StatefulWidget {
 
 class _CustomMarkerState extends State<CustomMarker> {
   late Color markerColor;
+  late String bucketInfo = "";
 
   @override
   void initState() {
     super.initState();
-    markerColor = widget.initialColor;
+    setBucketInfo();
+    setInitialColor();
   }
+
+
+  void setInitialColor() {
+    if (widget.status == 'true') {
+      markerColor = const Color.fromARGB(255, 46, 135, 1);
+    }
+    else {
+      markerColor = const Color.fromARGB(255, 201, 4, 4);
+    } 
+  }
+
+  void setBucketInfo() {
+    if (widget.buckets < 2) {
+      bucketInfo = widget.userId.toString() + " - 1 Κάδος";
+    } else {
+      bucketInfo = widget.userId.toString() + " - " + widget.buckets.toString() + " κάδοι";
+    }
+  }
+
 
   void toggleColor() {
     setState(() {
@@ -50,7 +73,7 @@ class _CustomMarkerState extends State<CustomMarker> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            widget.bucketInfo,
+            bucketInfo,
             style: TextStyle(
               fontSize: 10,
               color: Colors.black,
