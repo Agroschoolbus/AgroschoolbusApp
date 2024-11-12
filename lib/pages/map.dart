@@ -22,6 +22,7 @@ class MapPage extends StatefulWidget {
 class _MyHomePageState extends State<MapPage> {
 
   List<Marker> customMarkers = [];
+  List<LatLng> selectedPoints = [];
   Timer? _timer;
   late API _api;
   // Map<LatLng, Color> markerColors = {};
@@ -38,8 +39,14 @@ class _MyHomePageState extends State<MapPage> {
   }
 
   void tapHandler(LatLng markerPoint, Color markerColor) {
-    print(markerColor);
-    print(markerPoint);
+    if (selectedPoints.contains(markerPoint)) {
+      selectedPoints.remove(markerPoint);
+    } else {
+      selectedPoints.add(markerPoint);
+    }
+    // print(markerColor);
+    // print(markerPoint);
+    print(selectedPoints);
 
   }
 
