@@ -8,7 +8,7 @@ class CustomMarker extends StatefulWidget {
   final int buckets;
   final int userId;
   final String status;
-  final Function(Color) onColorChange;
+  final Function(Color, int) onColorChange;
 
   const CustomMarker({
     Key? key,
@@ -26,6 +26,7 @@ class CustomMarker extends StatefulWidget {
 class _CustomMarkerState extends State<CustomMarker> {
   late Color markerColor;
   late String bucketInfo = "";
+  late int state = 0;
 
   @override
   void initState() {
@@ -38,9 +39,11 @@ class _CustomMarkerState extends State<CustomMarker> {
   void setInitialColor() {
     if (widget.status == 'true') {
       markerColor = const Color.fromARGB(255, 46, 135, 1);
+      state = 2;
     }
     else {
       markerColor = const Color.fromARGB(255, 201, 4, 4);
+      state = 0;
     } 
   }
 
@@ -57,12 +60,14 @@ class _CustomMarkerState extends State<CustomMarker> {
     setState(() {
       if (markerColor == const Color.fromARGB(255, 201, 4, 4)) {
         markerColor = const Color.fromARGB(255, 21, 13, 253);
+        state = 1;
       } else if (markerColor == const Color.fromARGB(255, 21, 13, 253)) {
         markerColor = const Color.fromARGB(255, 201, 4, 4);
+        state = 0;
       }
           
     });
-    widget.onColorChange(markerColor);
+    widget.onColorChange(markerColor, state);
   }
 
   @override

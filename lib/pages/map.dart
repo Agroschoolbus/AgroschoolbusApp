@@ -38,14 +38,14 @@ class _MyHomePageState extends State<MapPage> {
     
   }
 
-  void tapHandler(LatLng markerPoint, Color markerColor) {
-    if (selectedPoints.contains(markerPoint)) {
-      selectedPoints.remove(markerPoint);
-    } else {
+  void tapHandler(LatLng markerPoint, int state ) {
+    if (state == 1) {
       selectedPoints.add(markerPoint);
     }
-    // print(markerColor);
-    // print(markerPoint);
+    if (state == 0) {
+      selectedPoints.remove(markerPoint);
+    }
+    
     print(selectedPoints);
 
   }
@@ -63,9 +63,9 @@ class _MyHomePageState extends State<MapPage> {
         userId: user,
         status: status,
         buckets: bucketInfo,
-        onColorChange: (Color newColor) {
+        onColorChange: (Color newColor, int state) {
           
-            tapHandler(point, newColor); // Update the color in the main state
+            tapHandler(point, state); // Update the color in the main state
           
         },
       ),
