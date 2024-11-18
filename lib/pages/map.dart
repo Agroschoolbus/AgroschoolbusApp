@@ -159,6 +159,15 @@ class _MyHomePageState extends State<MapPage> {
                       MarkerLayer(
                         markers: customMarkers,
                       ),
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                            points: selectedPoints,
+                            color: Colors.blue,
+                            strokeWidth: 4.0,
+                          ),
+                        ],
+                      )
                     ],
                   )
           ),
