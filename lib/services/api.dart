@@ -13,6 +13,7 @@ class API {
   String pageText='';
   List<Marker> customMarkers = [];
   List<LatLng> selectedPoints = [];
+  List<LatLng> directions = [];
   Map<String, String> query = {
     'user': '',
     'status': '',
@@ -107,6 +108,75 @@ class API {
   }
 
 
+  String addPointsToString() {
+    String points = "";
+    for (var elem in selectedPoints) {
+      points += elem.longitude.toString();
+      points += ',';
+      points += elem.latitude.toString();
+      points += ';';
+    }
+    points = removeLastCharacter(points);
+    points += '?steps=true';
+    return points;
+  }
+
+
+  String removeLastCharacter(String input) {
+    if (input.isNotEmpty) {
+      return input.substring(0, input.length - 1);
+    } else {
+      return input; 
+    }
+  }
+
+
+
+  void parseOSRMResponse(Map<String, dynamic> decoded) {
+    final List<dynamic> routes = decoded['routes'];
+
+    var route = routes[0];
+
+    final List<dynamic> legs = route['legs'];
+    for (var leg in legs) {
+      final List<dynamic> steps = leg['steps'];
+
+      for (var step in steps) {
+        
+
+        final List<dynamic> intersections = step['intersections'];
+        for (var inter in intersections) {
+          final List<dynamic> ll = inter['location'];
+          directions.add(LatLng(ll[1], ll[0]));
+        }
+        
+      }
+    }
+  }
+
+  Future<List<LatLng>> fetchDirections() async {
+    const osrm = 'http://147.102.160.160:5000/route/v1/driving/';
+
+    
+    String points = addPointsToString();
+    String url = osrm + points;
+
+    try {
+      final uri = Uri.parse(url);
+      final response = await http.get(uri);
+
+      print(response.statusCode);
+      
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        parseOSRMResponse(data);
+      }
+      
+      return directions;
+    } catch (error) {
+      throw Exception('Failed to connect to the API: $error');
+    }
+  }
   
 
   Future<List<Marker>> fetchLatLngPoints() async {

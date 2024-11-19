@@ -49,6 +49,14 @@ class _MyHomePageState extends State<MapPage> {
         customMarkers = markers;
       });
     });
+
+    _api.fetchDirections().then((directions) {
+      setState(() {
+        selectedPoints = directions;
+        
+      });
+    });
+
     
   }
 
