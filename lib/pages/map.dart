@@ -29,95 +29,108 @@ class _MyHomePageState extends State<MapPage> {
   // Map<LatLng, String> markerBuckets = {};
   
 
+  void fetch() async {
+    await _api.fetchLatLngPoints();
+  }
+
   @override
   void initState() {
     super.initState();
 
     _api = API(context: context);
-    fetchLatLngPoints();
-    
+    _api.fetchLatLngPoints().then((markers) {
+      setState(() {
+        customMarkers = markers;
+      });
+    });
   }
 
-  void tapHandler(LatLng markerPoint, int state ) {
-    if (state == 1) {
-      selectedPoints.add(markerPoint);
-    }
-    if (state == 0) {
-      selectedPoints.remove(markerPoint);
-    }
+  // void tapHandler(LatLng markerPoint, int state ) {
+  //   if (state == 1) {
+  //     selectedPoints.add(markerPoint);
+  //   }
+  //   if (state == 0) {
+  //     selectedPoints.remove(markerPoint);
+  //   }
     
-    print(selectedPoints);
+  //   print(selectedPoints);
 
-  }
+  // }
 
 
-  Marker buildPin(LatLng point, int bucketInfo, int user, String status) {
+  // Marker buildPin(LatLng point, int bucketInfo, int user, String status) {
     
 
-    return Marker(
-      point: point,
-      width: 60,
-      height: 60,
-      child: CustomMarker(
-        point: point,
-        userId: user,
-        status: status,
-        buckets: bucketInfo,
-        onColorChange: (Color newColor, int state) {
+  //   return Marker(
+  //     point: point,
+  //     width: 60,
+  //     height: 60,
+  //     child: CustomMarker(
+  //       point: point,
+  //       userId: user,
+  //       status: status,
+  //       buckets: bucketInfo,
+  //       onColorChange: (Color newColor, int state) {
           
-            tapHandler(point, state); // Update the color in the main state
+  //           tapHandler(point, state); // Update the color in the main state
           
-        },
-      ),
-    );
-  }
+  //       },
+  //     ),
+  //   );
+  // }
 
 
-  void fetchLatLngPoints() async {
-    const String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
+  // void fetchLatLngPoints() async {
+  //   const String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
 
-    try {
-      final uri = Uri.parse(baseUrl).replace(
-        queryParameters: {
-          'status': _api.query['status'],
-          'user': _api.query['user'],
-          'created_at__gte': _api.query['created_at__gte'],
-          'created_at__lte': _api.query['created_at__lte']
-        },
-      );
-      final response = await http.get(uri);
+  //   try {
+  //     final uri = Uri.parse(baseUrl).replace(
+  //       queryParameters: {
+  //         'status': _api.query['status'],
+  //         'user': _api.query['user'],
+  //         'created_at__gte': _api.query['created_at__gte'],
+  //         'created_at__lte': _api.query['created_at__lte']
+  //       },
+  //     );
+  //     final response = await http.get(uri);
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> data = json.decode(response.body);
         
-        setState(() {
+  //       setState(() {
           
         
-        customMarkers = data.map((item) {
+  //       customMarkers = data.map((item) {
 
-            final latitude = double.parse(item['latitude']);
-            final longitude = double.parse(item['longitude']);
-            final status = item['status'].toString();
-            final int buckets = item['buckets'];
-            final int user = item['user'];
+  //           final latitude = double.parse(item['latitude']);
+  //           final longitude = double.parse(item['longitude']);
+  //           final status = item['status'].toString();
+  //           final int buckets = item['buckets'];
+  //           final int user = item['user'];
 
-            LatLng latLng = LatLng(latitude, longitude);
+  //           LatLng latLng = LatLng(latitude, longitude);
             
-            return buildPin(latLng, buckets, user, status);
-          }).toList();
-        });
-        // return markers;
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (error) {
-      throw Exception('Failed to connect to the API: $error');
-    }
-  }
+  //           return buildPin(latLng, buckets, user, status);
+  //         }).toList();
+  //       });
+  //       // return markers;
+  //     } else {
+  //       throw Exception('Failed to load data');
+  //     }
+  //   } catch (error) {
+  //     throw Exception('Failed to connect to the API: $error');
+  //   }
+  // }
 
   void _setShowOption(int opt) {
     _api.setShowOption(opt);
-    fetchLatLngPoints();
+
+    _api.fetchLatLngPoints().then((markers) {
+      setState(() {
+        customMarkers = markers;
+      });
+    });
+    
   }
 
 
