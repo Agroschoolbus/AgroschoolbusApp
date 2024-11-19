@@ -81,9 +81,6 @@ class API {
     if (state == 0) {
       selectedPoints.remove(markerPoint);
     }
-    
-    print(selectedPoints);
-
   }
 
   Marker buildPin(LatLng point, int bucketInfo, int user, String status) {
@@ -117,7 +114,7 @@ class API {
       points += ';';
     }
     points = removeLastCharacter(points);
-    points += '?steps=true';
+    // points += '?steps=true';
     return points;
   }
 
@@ -133,7 +130,7 @@ class API {
 
 
   void parseOSRMResponse(Map<String, dynamic> decoded) {
-    final List<dynamic> routes = decoded['routes'];
+    final List<dynamic> routes = decoded['trips'];
 
     var route = routes[0];
 
@@ -155,14 +152,20 @@ class API {
   }
 
   Future<List<LatLng>> fetchDirections() async {
-    const osrm = 'http://147.102.160.160:5000/route/v1/driving/';
+    const osrm = 'http://147.102.160.160:5000/trip/v1/driving/';
 
     
     String points = addPointsToString();
     String url = osrm + points;
 
     try {
-      final uri = Uri.parse(url);
+      final uri = Uri.parse(url).replace(
+        queryParameters: {
+          'steps': "true",
+          'roundtrip': "true"
+        },
+      );
+      // print(uri);
       final response = await http.get(uri);
 
       print(response.statusCode);
