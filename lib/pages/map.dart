@@ -84,32 +84,38 @@ class _MyHomePageState extends State<MapPage> {
           Expanded(
             child: FlutterMap(
                     
-                    options: const MapOptions(
-                      initialCenter: LatLng(37.4835, 21.6479),
-                      initialZoom: 12.0,
-                      interactionOptions: InteractionOptions(
-                        flags: ~InteractiveFlag.doubleTapZoom,
-                      ),
+              options: const MapOptions(
+                initialCenter: LatLng(37.4835, 21.6479),
+                initialZoom: 12.0,
+                interactionOptions: InteractionOptions(
+                  flags: ~InteractiveFlag.doubleTapZoom,
+                ),
+              ),
+              children: [
+                TileLayer(
+                    
+                    // urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    // userAgentPackageName: 'com.example.app',
+                    urlTemplate:
+                  'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=1',
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    userAgentPackageName: 'com.example.app',
+                    // attribution: '© Google Maps',
+                ),
+                MarkerLayer(
+                  markers: customMarkers,
+                ),
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: selectedPoints,
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
                     ),
-                    children: [
-                      TileLayer(
-                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.example.app',
-                      ),
-                      MarkerLayer(
-                        markers: customMarkers,
-                      ),
-                      PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: selectedPoints,
-                            color: Colors.blue,
-                            strokeWidth: 4.0,
-                          ),
-                        ],
-                      )
-                    ],
-                  )
+                  ],
+                )
+              ],
+            )
           ),
           
           Row(
