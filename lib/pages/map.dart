@@ -37,10 +37,10 @@ class _MyHomePageState extends State<MapPage> {
   ];
 
   final List<Text> menuLabels = [
-    Text('Επιλογές'),
-    Text('Εργαλεία χάρτη'),
-    Text('Φίλτρα σημείων'),
-    Text('Διαδρομή'),
+    const Text('Επιλογές'),
+    const Text('Εργαλεία χάρτη'),
+    const Text('Φίλτρα σημείων'),
+    const Text('Διαδρομή'),
   ];
 
   List<String> tileUrls = [
@@ -85,7 +85,6 @@ class _MyHomePageState extends State<MapPage> {
         _api.clearSelectedPoints();
       });
       directionsOn = false;
-      print(directionsOn);
     } else {
       _api.fetchDirections().then((directions) {
         setState(() {
@@ -145,7 +144,7 @@ class _MyHomePageState extends State<MapPage> {
               options: const MapOptions(
                 initialCenter: LatLng(37.4835, 21.6479),
                 initialZoom: 12.0,
-                interactionOptions: const InteractionOptions(
+                interactionOptions: InteractionOptions(
                   flags: ~InteractiveFlag.doubleTapZoom,
                 ),
               ),
@@ -155,7 +154,7 @@ class _MyHomePageState extends State<MapPage> {
                     // urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     // userAgentPackageName: 'com.example.app',
                     urlTemplate: tileUrls[tileIndex],
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    subdomains: const ['mt0', 'mt1', 'mt2', 'mt3'],
                     userAgentPackageName: 'com.example.app',
                     // attribution: '© Google Maps',
                 ),
@@ -191,8 +190,8 @@ class _MyHomePageState extends State<MapPage> {
                   mapController.camera.zoom + 1,
                 );
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "zoomIn",
               tooltip: 'Zoom In',
               child: const Icon(Icons.zoom_in),
@@ -206,8 +205,8 @@ class _MyHomePageState extends State<MapPage> {
                   mapController.camera.zoom - 1,
                 );
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "zoomOut",
               tooltip: 'Zoom Out',
               child: const Icon(Icons.zoom_out),
@@ -217,12 +216,12 @@ class _MyHomePageState extends State<MapPage> {
               onPressed: () {
                 // Center map action
                 mapController.move(
-                  LatLng(37.4835, 21.6479),
+                  const LatLng(37.4835, 21.6479),
                   12.0,
                 );
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "centerMap",
               tooltip: 'Center Map',
               child: const Icon(Icons.my_location),
@@ -243,8 +242,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 _setShowOption(1);
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "yesterday",
               tooltip: 'Center Map',
               child: const Icon(Icons.calendar_month),
@@ -255,8 +254,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 _setShowOption(2);
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "today",
               tooltip: 'Center Map',
               child: const Icon(Icons.today),
@@ -267,8 +266,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 _setShowOption(3);
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "today1",
               tooltip: 'Center Map',
               child: const Icon(Icons.calendar_view_week),
@@ -286,8 +285,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 _fetchDirections();
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "directions",
               tooltip: 'Directions',
               child: const Icon(Icons.directions),
@@ -298,8 +297,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 // _fetchDirections();
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "directions",
               tooltip: 'Directions',
               child: const Icon(Icons.navigation),
@@ -310,8 +309,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 _changeTiles();
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "terrain",
               tooltip: 'Terrain',
               child: const Icon(Icons.terrain),
@@ -330,8 +329,8 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 _toggleButtons();
               },
-              backgroundColor: Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "filters",
               tooltip: 'Filters',
               label: menuLabels[showButtons],
