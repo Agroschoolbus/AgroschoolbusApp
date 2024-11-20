@@ -5,6 +5,7 @@ import 'dart:async';
 
 import '../services/api.dart';
 
+// 729D37
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key, required this.title});
@@ -19,8 +20,34 @@ class _MyHomePageState extends State<MapPage> {
 
   List<Marker> customMarkers = [];
   List<LatLng> selectedPoints = [];
-  Timer? _timer;
+  int showButtons = 0;
+  int tileIndex = 0;
+  bool directionsOn = false;
+  final MapController mapController = MapController();
+  
+  // Timer? _timer;
   late API _api;
+
+
+  final List<IconData> menuIcons = [
+    Icons.menu,
+    Icons.map,
+    Icons.location_pin,
+    Icons.route,
+  ];
+
+  final List<Text> menuLabels = [
+    Text('Επιλογές'),
+    Text('Εργαλεία χάρτη'),
+    Text('Φίλτρα σημείων'),
+    Text('Διαδρομή'),
+  ];
+
+  List<String> tileUrls = [
+    'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    'https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  ];
   
 
   void fetch() async {
@@ -49,17 +76,46 @@ class _MyHomePageState extends State<MapPage> {
         customMarkers = markers;
       });
     });
-
-    _api.fetchDirections().then((directions) {
-      setState(() {
-        selectedPoints = directions;
-        
-      });
-    });
-
-    
   }
 
+  void _fetchDirections() {
+    if (directionsOn) {
+      setState(() {
+        selectedPoints.clear();
+        _api.clearSelectedPoints();
+      });
+      directionsOn = false;
+      print(directionsOn);
+    } else {
+      _api.fetchDirections().then((directions) {
+        setState(() {
+          selectedPoints = directions;
+          
+        });
+      });
+      directionsOn = true;
+    }
+  }
+
+  void _toggleButtons() {
+    setState(() {
+      if (showButtons == 3) {
+        showButtons = 0;
+      } else {
+        showButtons ++;
+      }
+    });
+  }
+
+  void _changeTiles() {
+    setState(() {
+      if (tileIndex == 2) {
+        tileIndex = 0;
+      } else {
+        tileIndex ++;
+      }
+    });
+  }
 
   // @override
   // void dispose() {
@@ -73,21 +129,23 @@ class _MyHomePageState extends State<MapPage> {
       // appBar: AppBar(
       //   title: Text("Επισήμανση θέσης σάκου"),
       // ),
-      body: Column(
+      body: Stack(
+        children:[Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            children: [
-              Expanded(child: Text(_api.pageText)),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Expanded(child: Text(_api.pageText)),
+          //   ],
+          // ),
+          
           Expanded(
             child: FlutterMap(
-                    
+              mapController: mapController,
               options: const MapOptions(
                 initialCenter: LatLng(37.4835, 21.6479),
                 initialZoom: 12.0,
-                interactionOptions: InteractionOptions(
+                interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.doubleTapZoom,
                 ),
               ),
@@ -96,8 +154,7 @@ class _MyHomePageState extends State<MapPage> {
                     
                     // urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     // userAgentPackageName: 'com.example.app',
-                    urlTemplate:
-                  'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=1',
+                    urlTemplate: tileUrls[tileIndex],
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                     userAgentPackageName: 'com.example.app',
                     // attribution: '© Google Maps',
@@ -118,43 +175,174 @@ class _MyHomePageState extends State<MapPage> {
             )
           ),
           
-          Row(
-
-            children: [
-              
-              Expanded(
-                flex: 6,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: () => _setShowOption(1),
-                  child: const Text('Όλα τα δοχεία'),
-                ),
-              ),
-              Expanded(
-                flex: 6,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: () => _setShowOption(2),
-                  child: const Text('Σημερινά δοχεία'),
-                ),
-              ),
-              Expanded(
-                flex: 6,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(textStyle: const TextStyle(fontSize: 14)),
-                  onPressed: () => _setShowOption(3),
-                  child: const Text('Μη συλλεχθέντα σημερινά δοχεία'),
-                ),
-              ),
-              
-            ],
-          ),
-          
-          const SizedBox(
-            height: 50,
-          ),
         ],
       ),
+      if (showButtons == 1)
+      Positioned(
+        bottom: 200.0,
+        left: 20.0,
+        child: Column(
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                // Zoom in action
+                mapController.move(
+                  mapController.camera.center,
+                  mapController.camera.zoom + 1,
+                );
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "zoomIn",
+              tooltip: 'Zoom In',
+              child: const Icon(Icons.zoom_in),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Zoom out action
+                mapController.move(
+                  mapController.camera.center,
+                  mapController.camera.zoom - 1,
+                );
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "zoomOut",
+              tooltip: 'Zoom Out',
+              child: const Icon(Icons.zoom_out),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                mapController.move(
+                  LatLng(37.4835, 21.6479),
+                  12.0,
+                );
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "centerMap",
+              tooltip: 'Center Map',
+              child: const Icon(Icons.my_location),
+            ),
+            
+            
+          ],
+        ),
+      ),
+      if (showButtons == 2)
+      Positioned(
+        bottom: 200.0,
+        left: 20.0,
+        child: Column(
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _setShowOption(1);
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "yesterday",
+              tooltip: 'Center Map',
+              child: const Icon(Icons.calendar_month),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _setShowOption(2);
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "today",
+              tooltip: 'Center Map',
+              child: const Icon(Icons.today),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _setShowOption(3);
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "today1",
+              tooltip: 'Center Map',
+              child: const Icon(Icons.calendar_view_week),
+            ),
+          ])
+      ),
+      if (showButtons == 3)
+      Positioned(
+        bottom: 200.0,
+        left: 20.0,
+        child: Column(
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _fetchDirections();
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "directions",
+              tooltip: 'Directions',
+              child: const Icon(Icons.directions),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                // _fetchDirections();
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "directions",
+              tooltip: 'Directions',
+              child: const Icon(Icons.navigation),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _changeTiles();
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "terrain",
+              tooltip: 'Terrain',
+              child: const Icon(Icons.terrain),
+            ),
+          ]
+        )
+      ),
+
+      Positioned(
+        bottom: 30.0,
+        left: 20.0,
+        child: Column(
+          children: [
+            FloatingActionButton.extended(
+              onPressed: () {
+                // Center map action
+                _toggleButtons();
+              },
+              backgroundColor: Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: Color.fromARGB(255, 255, 255, 255),
+              heroTag: "filters",
+              tooltip: 'Filters',
+              label: menuLabels[showButtons],
+              icon: Icon(menuIcons[showButtons]),
+            ),
+          ]
+        )
+      ),
+      
+      ])
+      
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

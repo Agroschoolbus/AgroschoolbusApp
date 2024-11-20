@@ -74,6 +74,10 @@ class API {
     
   }
 
+  void clearSelectedPoints() {
+    selectedPoints.clear();
+  }
+
   void tapHandler(LatLng markerPoint, int state ) {
     if (state == 1) {
       selectedPoints.add(markerPoint);
