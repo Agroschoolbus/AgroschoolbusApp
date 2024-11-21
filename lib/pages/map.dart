@@ -342,7 +342,6 @@ class _MyHomePageState extends State<MapPage> {
       
       ])
       
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
