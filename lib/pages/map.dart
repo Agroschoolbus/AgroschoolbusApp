@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 
 import '../services/api.dart';
+import '../services/gps.dart';
 
 // 729D37
 
@@ -24,6 +26,12 @@ class _MyHomePageState extends State<MapPage> {
   int tileIndex = 0;
   bool directionsOn = false;
   final MapController mapController = MapController();
+  Stream<Position>? _positionStream;
+  StreamSubscription<Position>? _positionSubscription;
+  Position? _currentPosition;
+  late LatLng cur = LatLng(37.4835, 21.6479);
+
+
   
   // Timer? _timer;
   late API _api;
@@ -116,11 +124,54 @@ class _MyHomePageState extends State<MapPage> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   // _timer?.cancel(); // Cancel the timer when widget is disposed
-  //   super.dispose();
-  // }
+  Future<void> _setupLocationStream() async {
+    try {
+      // Await the stream initialization
+      _positionStream = await initializeLocationStream();
+      _positionSubscription = _positionStream!.listen((Position position) {
+        setState(() {
+          _currentPosition = position;
+        });
+      });
+    } catch (e) {
+      print("Error initializing location stream: $e");
+    }
+  }
+
+  void _stopListening() {
+    if (_positionSubscription != null) {
+      _positionSubscription!.cancel();
+      _positionSubscription = null;
+    }
+  }
+
+  void _togglePositionSubscription() {
+    if (_positionSubscription == null) {
+      _setupLocationStream();
+    } else {
+      _stopListening();
+    }
+  }
+
+  List<Marker> getCarMarker() {
+    if (_currentPosition == null) return [];
+    return [
+      Marker(
+        point: LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 
+        width: 50,
+        height: 50,
+        child: Transform.rotate(
+                angle: _currentPosition!.heading, // Rotation in radians
+                child: Image.asset(
+                  'assets/icons/car.png',
+                  width: 40.0,
+                  height: 40.0,
+                ),
+              ),
+      ),
+    ];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +210,10 @@ class _MyHomePageState extends State<MapPage> {
                     // attribution: '© Google Maps',
                 ),
                 MarkerLayer(
-                  markers: customMarkers,
+                  markers: [
+                    ...customMarkers,
+                    ...getCarMarker(),
+                  ]
                 ),
                 PolylineLayer(
                   polylines: [
@@ -296,6 +350,7 @@ class _MyHomePageState extends State<MapPage> {
               onPressed: () {
                 // Center map action
                 // _fetchDirections();
+                _togglePositionSubscription();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
