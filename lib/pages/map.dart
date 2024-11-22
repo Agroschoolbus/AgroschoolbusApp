@@ -86,23 +86,34 @@ class _MyHomePageState extends State<MapPage> {
     });
   }
 
-  void _fetchDirections() {
-    if (directionsOn) {
-      setState(() {
-        selectedPoints.clear();
-        _api.clearSelectedPoints();
-      });
-      directionsOn = false;
-    } else {
-      _api.fetchDirections().then((directions) {
-        setState(() {
-          selectedPoints = directions;
-          
-        });
-      });
-      directionsOn = true;
-    }
+
+  Future<void> _fetchRoute() async {
+    List<List<double>> coordinates = await _api.fetchDirections();
+
+    setState(() {
+      selectedPoints = coordinates
+          .map((coord) => LatLng(coord[0], coord[1]))
+          .toList();
+    });
   }
+
+  // void _fetchDirections() {
+  //   if (directionsOn) {
+  //     setState(() {
+  //       selectedPoints.clear();
+  //       _api.clearSelectedPoints();
+  //     });
+  //     directionsOn = false;
+  //   } else {
+  //     _api.fetchDirections().then((directions) {
+  //       setState(() {
+  //         selectedPoints = directions;
+          
+  //       });
+  //     });
+  //     directionsOn = true;
+  //   }
+  // }
 
   void _toggleButtons() {
     setState(() {
@@ -337,7 +348,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                _fetchDirections();
+                _fetchRoute();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),

@@ -17,7 +17,7 @@ class CustomMarker extends StatefulWidget {
     required this.userId,
     required this.status,
     required this.onColorChange,
-  }) : super(key: key);
+  }) : super(key: const ValueKey(3));
 
   @override
   _CustomMarkerState createState() => _CustomMarkerState();

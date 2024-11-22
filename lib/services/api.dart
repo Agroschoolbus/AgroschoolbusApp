@@ -6,6 +6,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../utils/custom_marker.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+
 
 
 class API {
@@ -134,7 +136,7 @@ class API {
 
 
   void parseOSRMResponse(Map<String, dynamic> decoded) {
-    final List<dynamic> routes = decoded['trips'];
+    final List<dynamic> routes = decoded['routes'];
 
     var route = routes[0];
 
@@ -155,7 +157,15 @@ class API {
     }
   }
 
-  Future<List<LatLng>> fetchDirections() async {
+
+  List<List<double>> decodePolyline(String encodedPolyline) {
+    PolylinePoints polylinePoints = PolylinePoints();
+    List<PointLatLng> points = polylinePoints.decodePolyline(encodedPolyline);
+
+    return points.map((point) => [point.latitude, point.longitude]).toList();
+  }
+
+  Future<List<List<double>>> fetchDirections() async {
     const osrm = 'http://147.102.160.160:5000/trip/v1/driving/';
 
     
@@ -165,7 +175,9 @@ class API {
     try {
       final uri = Uri.parse(url).replace(
         queryParameters: {
-          'steps': "true",
+          'overview': "full",
+          'geometries': "polyline",
+          // 'steps': "true",
           'roundtrip': "true"
         },
       );
@@ -176,10 +188,13 @@ class API {
       
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        parseOSRMResponse(data);
+        final encodedPolyline = data['trips'][0]['geometry'];
+        return decodePolyline(encodedPolyline);
+        // parseOSRMResponse(data);
       }
       
-      return directions;
+      // return directions;
+      return [];
     } catch (error) {
       throw Exception('Failed to connect to the API: $error');
     }
