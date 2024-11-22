@@ -24,7 +24,8 @@ class _MyHomePageState extends State<MapPage> {
   List<LatLng> selectedPoints = [];
   int showButtons = 0;
   int tileIndex = 0;
-  bool directionsOn = false;
+  int filterPins = 1;
+  bool isDirectionsOn = false;
   final MapController mapController = MapController();
   Stream<Position>? _positionStream;
   StreamSubscription<Position>? _positionSubscription;
@@ -77,6 +78,7 @@ class _MyHomePageState extends State<MapPage> {
 
 
   void _setShowOption(int opt) {
+    filterPins = opt;
     _api.setShowOption(opt);
 
     _api.fetchLatLngPoints().then((markers) {
@@ -88,32 +90,26 @@ class _MyHomePageState extends State<MapPage> {
 
 
   Future<void> _fetchRoute() async {
-    List<List<double>> coordinates = await _api.fetchDirections();
-
-    setState(() {
-      selectedPoints = coordinates
-          .map((coord) => LatLng(coord[0], coord[1]))
-          .toList();
-    });
+    if (_api.selectedPoints.length < 2) {
+      return;
+    }
+    if (selectedPoints.isEmpty) {
+      List<List<double>> coordinates = await _api.fetchDirections();
+      setState(() {
+        isDirectionsOn = true;
+        selectedPoints = coordinates
+            .map((coord) => LatLng(coord[0], coord[1]))
+            .toList();
+      });
+    } else {
+      setState(() {
+        isDirectionsOn = false;
+        selectedPoints = [];
+        
+        //_api.selectedPoints = [];
+      });
+    }
   }
-
-  // void _fetchDirections() {
-  //   if (directionsOn) {
-  //     setState(() {
-  //       selectedPoints.clear();
-  //       _api.clearSelectedPoints();
-  //     });
-  //     directionsOn = false;
-  //   } else {
-  //     _api.fetchDirections().then((directions) {
-  //       setState(() {
-  //         selectedPoints = directions;
-          
-  //       });
-  //     });
-  //     directionsOn = true;
-  //   }
-  // }
 
   void _toggleButtons() {
     setState(() {
@@ -311,7 +307,10 @@ class _MyHomePageState extends State<MapPage> {
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "yesterday",
               tooltip: 'Όλα τα δοχεία',
-              child: const Icon(Icons.calendar_month),
+              child: Icon(
+                Icons.calendar_month,
+                color: filterPins == 1 ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+              ),
             ),
             const SizedBox(height: 10.0),
             FloatingActionButton(
@@ -323,7 +322,10 @@ class _MyHomePageState extends State<MapPage> {
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "today",
               tooltip: 'Σημερινά δοχεία',
-              child: const Icon(Icons.today),
+              child: Icon(
+                Icons.today,
+                color: filterPins == 2 ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+              ),
             ),
             const SizedBox(height: 10.0),
             FloatingActionButton(
@@ -335,7 +337,10 @@ class _MyHomePageState extends State<MapPage> {
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "today1",
               tooltip: 'Μη συλλεχθέντα, σημερινά δοχεία',
-              child: const Icon(Icons.calendar_view_week),
+              child: Icon(
+                Icons.calendar_view_week,
+                color: filterPins == 3 ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+              ),
             ),
           ])
       ),
@@ -354,7 +359,10 @@ class _MyHomePageState extends State<MapPage> {
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "directions",
               tooltip: 'Δημιουργία διαδρομής',
-              child: const Icon(Icons.directions),
+              child: Icon(
+                Icons.directions,
+                color: isDirectionsOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+                ),
             ),
             const SizedBox(height: 10.0),
             FloatingActionButton(

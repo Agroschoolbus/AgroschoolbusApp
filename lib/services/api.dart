@@ -184,7 +184,6 @@ class API {
       // print(uri);
       final response = await http.get(uri);
 
-      print(response.statusCode);
       
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
