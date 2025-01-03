@@ -103,7 +103,7 @@ class API {
         buckets: bucketInfo,
         onColorChange: (Color newColor, int state) {
           
-            tapHandler(point, state); // Update the color in the main state
+            tapHandler(point, state);
           
         },
       ),
@@ -200,7 +200,7 @@ class API {
   }
   
 
-  Future<List<Marker>> fetchLatLngPoints() async {
+  Future<List<dynamic>> fetchLatLngPoints() async {
     const String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
 
     try {
@@ -220,20 +220,21 @@ class API {
         
           
         
-        customMarkers = data.map((item) {
+        // customMarkers = data.map((item) {
 
-            final latitude = double.parse(item['latitude']);
-            final longitude = double.parse(item['longitude']);
-            final status = item['status'].toString();
-            final int buckets = item['buckets'];
-            final int user = item['user'];
+        //     final latitude = double.parse(item['latitude']);
+        //     final longitude = double.parse(item['longitude']);
+        //     final status = item['status'].toString();
+        //     final int buckets = item['buckets'];
+        //     final int user = item['user'];
 
-            LatLng latLng = LatLng(latitude, longitude);
+        //     LatLng latLng = LatLng(latitude, longitude);
             
-            return buildPin(latLng, buckets, user, status);
-          }).toList();
+        //     return buildPin(latLng, buckets, user, status);
+        //   }).toList();
         
-        return customMarkers;
+        // return customMarkers;
+        return data;
       } else {
         throw Exception('Failed to load data');
       }

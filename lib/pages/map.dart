@@ -7,6 +7,8 @@ import 'dart:async';
 import '../services/api.dart';
 import '../services/gps.dart';
 
+import '../utils/marker_data.dart';
+
 // 729D37
 
 class MapPage extends StatefulWidget {
@@ -22,6 +24,7 @@ class _MyHomePageState extends State<MapPage> {
 
   List<Marker> customMarkers = [];
   List<LatLng> selectedPoints = [];
+  Map<LatLng, MarkerData> markersDetails = {};
   int showButtons = 0;
   int tileIndex = 0;
   int filterPins = 1;
@@ -63,7 +66,6 @@ class _MyHomePageState extends State<MapPage> {
     await _api.fetchLatLngPoints();
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -71,7 +73,20 @@ class _MyHomePageState extends State<MapPage> {
     _api = API(context: context);
     _api.fetchLatLngPoints().then((markers) {
       setState(() {
-        customMarkers = markers;
+        customMarkers = markers.map((item) {
+
+          final latitude = double.parse(item['latitude']);
+          final longitude = double.parse(item['longitude']);
+          final status = item['status'].toString();
+          final int buckets = item['buckets'];
+          final int user = item['user'];
+
+          LatLng latLng = LatLng(latitude, longitude);
+          MarkerData marker_data = MarkerData(point: latLng, buckets: buckets, userId: user, status: status);
+          markersDetails[latLng] = marker_data;
+
+          return buildPin(marker_data);
+        }).toList();
       });
     });
   }
@@ -81,11 +96,11 @@ class _MyHomePageState extends State<MapPage> {
     filterPins = opt;
     _api.setShowOption(opt);
 
-    _api.fetchLatLngPoints().then((markers) {
-      setState(() {
-        customMarkers = markers;
-      });
-    });
+    // _api.fetchLatLngPoints().then((markers) {
+    //   setState(() {
+    //     customMarkers = markers;
+    //   });
+    // });
   }
 
 
@@ -159,6 +174,55 @@ class _MyHomePageState extends State<MapPage> {
       _stopListening();
     }
   }
+
+  void toggleColor(LatLng point) {
+    setState(() {
+    //   markerColors[point] =  Color.fromARGB(255, 201, 4, 4);
+    // });
+      for (int i = 0; i < customMarkers.length; i++) {
+        if (customMarkers[i].point == point) {
+          markersDetails[point]!.markerColor = Color.fromARGB(255, 201, 4, 4);
+          customMarkers[i] = buildPin(markersDetails[point]!);
+        }
+      }
+    });
+    print("xxaxaxaxaxaax");
+  }
+
+  Marker buildPin(MarkerData marker_data) {
+    
+    // markerColors[point] =  Color.fromARGB(255, 46, 135, 1);
+    return Marker(
+      point: marker_data.point,
+      width: 60,
+      height: 60,
+      child: GestureDetector(
+        onTap: () {
+          toggleColor(marker_data.point);
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "test",
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white.withOpacity(0.7),
+              ),
+            ),
+            Icon(
+              Icons.location_pin,
+              size: 30,
+              color: marker_data.markerColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+    
 
   List<Marker> getCarMarker() {
     if (_currentPosition == null) return [];
