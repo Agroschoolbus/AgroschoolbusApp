@@ -80,36 +80,6 @@ class API {
     selectedPoints.clear();
   }
 
-  void tapHandler(LatLng markerPoint, int state ) {
-    if (state == 1) {
-      selectedPoints.add(markerPoint);
-    }
-    if (state == 0) {
-      selectedPoints.remove(markerPoint);
-    }
-  }
-
-  Marker buildPin(LatLng point, int bucketInfo, int user, String status) {
-    
-
-    return Marker(
-      point: point,
-      width: 60,
-      height: 60,
-      child: CustomMarker(
-        point: point,
-        userId: user,
-        status: status,
-        buckets: bucketInfo,
-        onColorChange: (Color newColor, int state) {
-          
-            tapHandler(point, state);
-          
-        },
-      ),
-    );
-  }
-
 
   String addPointsToString() {
     String points = "";

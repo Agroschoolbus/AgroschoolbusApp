@@ -177,8 +177,6 @@ class _MyHomePageState extends State<MapPage> {
 
   void toggleColor(LatLng point) {
     setState(() {
-    //   markerColors[point] =  Color.fromARGB(255, 201, 4, 4);
-    // });
       for (int i = 0; i < customMarkers.length; i++) {
         if (customMarkers[i].point == point) {
           markersDetails[point]!.markerColor = Color.fromARGB(255, 201, 4, 4);
@@ -186,7 +184,6 @@ class _MyHomePageState extends State<MapPage> {
         }
       }
     });
-    print("xxaxaxaxaxaax");
   }
 
   Marker buildPin(MarkerData marker_data) {
