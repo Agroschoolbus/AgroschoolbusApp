@@ -75,99 +75,6 @@ class API {
     }
     
   }
-
-  void clearSelectedPoints() {
-    selectedPoints.clear();
-  }
-
-
-  String addPointsToString() {
-    String points = "";
-    for (var elem in selectedPoints) {
-      points += elem.longitude.toString();
-      points += ',';
-      points += elem.latitude.toString();
-      points += ';';
-    }
-    points = removeLastCharacter(points);
-    // points += '?steps=true';
-    return points;
-  }
-
-
-  String removeLastCharacter(String input) {
-    if (input.isNotEmpty) {
-      return input.substring(0, input.length - 1);
-    } else {
-      return input; 
-    }
-  }
-
-
-
-  void parseOSRMResponse(Map<String, dynamic> decoded) {
-    final List<dynamic> routes = decoded['routes'];
-
-    var route = routes[0];
-
-    final List<dynamic> legs = route['legs'];
-    for (var leg in legs) {
-      final List<dynamic> steps = leg['steps'];
-
-      for (var step in steps) {
-        
-
-        final List<dynamic> intersections = step['intersections'];
-        for (var inter in intersections) {
-          final List<dynamic> ll = inter['location'];
-          directions.add(LatLng(ll[1], ll[0]));
-        }
-        
-      }
-    }
-  }
-
-
-  List<List<double>> decodePolyline(String encodedPolyline) {
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> points = polylinePoints.decodePolyline(encodedPolyline);
-
-    return points.map((point) => [point.latitude, point.longitude]).toList();
-  }
-
-  Future<List<List<double>>> fetchDirections() async {
-    const osrm = 'http://147.102.160.160:5000/trip/v1/driving/';
-
-    
-    String points = addPointsToString();
-    String url = osrm + points;
-
-    try {
-      final uri = Uri.parse(url).replace(
-        queryParameters: {
-          'overview': "full",
-          'geometries': "polyline",
-          // 'steps': "true",
-          'roundtrip': "true"
-        },
-      );
-      // print(uri);
-      final response = await http.get(uri);
-
-      
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final encodedPolyline = data['trips'][0]['geometry'];
-        return decodePolyline(encodedPolyline);
-        // parseOSRMResponse(data);
-      }
-      
-      // return directions;
-      return [];
-    } catch (error) {
-      throw Exception('Failed to connect to the API: $error');
-    }
-  }
   
 
   Future<List<dynamic>> fetchLatLngPoints() async {
@@ -187,23 +94,6 @@ class API {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         
-        
-          
-        
-        // customMarkers = data.map((item) {
-
-        //     final latitude = double.parse(item['latitude']);
-        //     final longitude = double.parse(item['longitude']);
-        //     final status = item['status'].toString();
-        //     final int buckets = item['buckets'];
-        //     final int user = item['user'];
-
-        //     LatLng latLng = LatLng(latitude, longitude);
-            
-        //     return buildPin(latLng, buckets, user, status);
-        //   }).toList();
-        
-        // return customMarkers;
         return data;
       } else {
         throw Exception('Failed to load data');

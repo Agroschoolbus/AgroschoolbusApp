@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'package:agroschoolbus/utils/enum_types.dart';
 
 class MarkerData {
   LatLng point;
   int buckets;
   int userId;
-  Color markerColor = Color.fromARGB(255, 46, 135, 1);
+  Color markerColor = const Color.fromARGB(255, 46, 135, 1);
   String status;
+  late MarkerState state;
   
 
   MarkerData({
@@ -15,13 +17,15 @@ class MarkerData {
     required this.buckets,
     required this.userId,
     required this.status,
-  }) { setMarkerColor(); }
+  }) { initMarkerColor(); }
 
-  void setMarkerColor() {
+  void initMarkerColor() {
     if (status == "false") {
-      markerColor = Color.fromARGB(255, 201, 4, 4);
+      state = MarkerState.pending;
+      markerColor = const Color.fromARGB(255, 201, 4, 4);
     } else {
-      markerColor = Color.fromARGB(255, 46, 135, 1);
+      state = MarkerState.collected;
+      markerColor =const Color.fromARGB(255, 46, 135, 1);
     }
   }
 

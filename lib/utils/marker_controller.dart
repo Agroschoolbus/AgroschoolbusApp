@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+
+import 'package:agroschoolbus/utils/enum_types.dart';
 import './marker_data.dart';
 import '../services/api.dart';
 
 
 class MarkerContoller {
 
+    BuildContext context;
     List<Marker> customMarkers = [];
     Map<LatLng, MarkerData> markersDataList = {};
     API api;
 
     final VoidCallback onMarkersUpdated;
 
-    MarkerContoller({required this.onMarkersUpdated, required this.api});
+    MarkerContoller({
+      required this.onMarkersUpdated, 
+      required this.api,
+      required this.context
+    });
 
     void fetchMarkers() async {
       await api.fetchLatLngPoints().then((markers) {
@@ -28,10 +35,10 @@ class MarkerContoller {
             // print(status);
 
             LatLng latLng = LatLng(latitude, longitude);
-            MarkerData marker_data = MarkerData(point: latLng, buckets: buckets, userId: user, status: status);
-            markersDataList[latLng] = marker_data;
+            MarkerData markerData = MarkerData(point: latLng, buckets: buckets, userId: user, status: status);
+            markersDataList[latLng] = markerData;
 
-            return buildPin(marker_data);
+            return buildPin(markerData);
           }).toList();
       });
       onMarkersUpdated();
@@ -39,11 +46,23 @@ class MarkerContoller {
 
 
     void tapOnMarker(LatLng point) {
-        // Update marker color
+        
         for (int i = 0; i < customMarkers.length; i++) {
           if (customMarkers[i].point == point) {
-            print(markersDataList[point]!.getStatus());
-            markersDataList[point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
+            showDialogBox(markersDataList[point]!);
+            switch(markersDataList[point]!.state) {
+              
+              case MarkerState.pending:
+                markersDataList[point]!.state = MarkerState.selected;
+                markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
+              case MarkerState.selected:
+                markersDataList[point]!.state = MarkerState.collected;
+                markersDataList[point]!.markerColor = const Color.fromARGB(255, 46, 135, 1);
+              case MarkerState.collected:
+                markersDataList[point]!.state = MarkerState.pending;
+                markersDataList[point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
+            }
+
             customMarkers[i] = buildPin(markersDataList[point]!);
           }
         }
@@ -86,6 +105,32 @@ class MarkerContoller {
         );
     }
 
+
+    void showDialogBox(MarkerData marker) {
+      showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Λεπτομέρειες"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Χρήστης: ${marker.userId}"),
+              Text("Κατάσταση: ${marker.state}"),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("Κλείσιμο"),
+            ),
+          ],
+        );
+      },
+    );
+    }
     
 
 }

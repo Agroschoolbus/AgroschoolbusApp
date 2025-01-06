@@ -1,4 +1,5 @@
 
+import 'package:agroschoolbus/services/osrm_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -40,6 +41,7 @@ class _MyHomePageState extends State<MapPage> {
   
   // Timer? _timer;
   late API _api;
+  late OsrmApi osrm_api;
 
 
   final List<IconData> menuIcons = [
@@ -72,9 +74,10 @@ class _MyHomePageState extends State<MapPage> {
     super.initState();
 
     _api = API(context: context);
+    osrm_api = OsrmApi();
     markerContoller = MarkerContoller(onMarkersUpdated: () {
       setState(() {});
-    }, api: _api);
+    }, api: _api, context: context);
     markerContoller.fetchMarkers();
     
     
@@ -96,7 +99,7 @@ class _MyHomePageState extends State<MapPage> {
       return;
     }
     if (selectedPoints.isEmpty) {
-      List<List<double>> coordinates = await _api.fetchDirections();
+      List<List<double>> coordinates = await osrm_api.fetchDirections();
       setState(() {
         isDirectionsOn = true;
         selectedPoints = coordinates
