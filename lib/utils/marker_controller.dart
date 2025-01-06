@@ -25,6 +25,8 @@ class MarkerContoller {
             final int buckets = item['buckets'];
             final int user = item['user'];
 
+            // print(status);
+
             LatLng latLng = LatLng(latitude, longitude);
             MarkerData marker_data = MarkerData(point: latLng, buckets: buckets, userId: user, status: status);
             markersDataList[latLng] = marker_data;
@@ -35,6 +37,21 @@ class MarkerContoller {
       onMarkersUpdated();
     }
 
+
+    void tapOnMarker(LatLng point) {
+        // Update marker color
+        for (int i = 0; i < customMarkers.length; i++) {
+          if (customMarkers[i].point == point) {
+            print(markersDataList[point]!.getStatus());
+            markersDataList[point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
+            customMarkers[i] = buildPin(markersDataList[point]!);
+          }
+        }
+
+        onMarkersUpdated();
+    }
+
+
     Marker buildPin(MarkerData markerData) {
     
         // markerColors[point] =  Color.fromARGB(255, 46, 135, 1);
@@ -44,7 +61,7 @@ class MarkerContoller {
             height: 60,
             child: GestureDetector(
                 onTap: () {
-                toggleColor(markerData.point);
+                tapOnMarker(markerData.point);
                 },
                 child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -69,17 +86,6 @@ class MarkerContoller {
         );
     }
 
-    void toggleColor(LatLng point) {
-        // Update marker color
-        for (int i = 0; i < customMarkers.length; i++) {
-        if (customMarkers[i].point == point) {
-            markersDataList[point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
-            customMarkers[i] = buildPin(markersDataList[point]!);
-        }
-        }
-
-        // Notify the parent widget to re-render
-        onMarkersUpdated();
-    }
+    
 
 }

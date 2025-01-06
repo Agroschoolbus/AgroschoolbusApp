@@ -15,7 +15,15 @@ class MarkerData {
     required this.buckets,
     required this.userId,
     required this.status,
-  });
+  }) { setMarkerColor(); }
+
+  void setMarkerColor() {
+    if (status == "false") {
+      markerColor = Color.fromARGB(255, 201, 4, 4);
+    } else {
+      markerColor = Color.fromARGB(255, 46, 135, 1);
+    }
+  }
 
   void setPoint(LatLng point) {
     this.point = point;
@@ -31,6 +39,14 @@ class MarkerData {
 
   LatLng getPoint() {
     return point;
+  }
+
+  void setStatus(String status) {
+    this.status = status;
+  }
+
+  String getStatus() {
+    return status;
   }
 
   String getBucketsInfo() {
