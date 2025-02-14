@@ -73,6 +73,22 @@ class MarkerContoller {
     }
 
 
+    void clearRoute() {
+        
+        for (int i = 0; i < customMarkers.length; i++) {
+          if (markersDataList[customMarkers[i].point]!.state == MarkerState.selected) {
+            markersDataList[customMarkers[i].point]!.state = MarkerState.pending;
+            markersDataList[customMarkers[i].point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
+            customMarkers[i] = buildPin(markersDataList[customMarkers[i].point]!);
+          }
+        }
+
+        onMarkersUpdated();
+    }
+
+
+
+
     Marker buildPin(MarkerData markerData) {
     
         // markerColors[point] =  Color.fromARGB(255, 46, 135, 1);

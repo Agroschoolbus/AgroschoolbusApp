@@ -63,6 +63,14 @@ class _MyHomePageState extends State<MapPage> {
     'https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   ];
+
+
+  final List<IconData> routeButton = [
+    Icons.play_arrow,
+    Icons.stop,
+  ];
+
+  int routeStatus = 0; 
   
 
   void fetch() async {
@@ -165,6 +173,21 @@ class _MyHomePageState extends State<MapPage> {
     } else {
       _stopListening();
     }
+  }
+
+
+  void _setRouteStatus(int status) {
+    setState(() {
+      if ((routeStatus == 1 && status == 1) || status == 0) {
+        selectedPoints = [];
+        isDirectionsOn = false;
+        markerContoller.clearRoute();
+      }
+      else {
+        routeStatus = status;
+      }
+      
+    });
   }
 
   
@@ -420,6 +443,57 @@ class _MyHomePageState extends State<MapPage> {
               label: menuLabels[showButtons],
               icon: Icon(menuIcons[showButtons]),
             ),
+            
+          ]
+        )
+      ),
+
+      if (isDirectionsOn)
+      Positioned(
+        bottom: 30.0,
+        right: 80.0,
+        child: Column(
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _setRouteStatus(1);
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "start",
+              tooltip: 'Εκκίνηση',
+              child: Icon(
+                routeButton[routeStatus],
+                color: filterPins == 2 ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+              ),
+            ),
+            
+          ]
+        )
+      ),
+
+      if (isDirectionsOn && routeStatus < 1)
+      Positioned(
+        bottom: 30.0,
+        right: 20.0,
+        child: Column(
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _setRouteStatus(0);
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "stop",
+              tooltip: 'Ακύρωση',
+              child: Icon(
+                Icons.cancel,
+                color: filterPins == 2 ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+              ),
+            ),
+            
           ]
         )
       ),
