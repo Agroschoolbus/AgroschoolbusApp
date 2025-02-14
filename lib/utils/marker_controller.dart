@@ -83,6 +83,8 @@ class MarkerContoller {
           }
         }
 
+        selectedPoints = [];
+
         onMarkersUpdated();
     }
 

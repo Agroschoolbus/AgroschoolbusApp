@@ -179,6 +179,7 @@ class _MyHomePageState extends State<MapPage> {
   void _setRouteStatus(int status) {
     setState(() {
       if ((routeStatus == 1 && status == 1) || status == 0) {
+        routeStatus = 0;
         selectedPoints = [];
         isDirectionsOn = false;
         markerContoller.clearRoute();
