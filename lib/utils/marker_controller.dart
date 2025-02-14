@@ -10,6 +10,7 @@ import '../services/api.dart';
 class MarkerContoller {
 
     BuildContext context;
+    List<LatLng> selectedPoints = [];
     List<Marker> customMarkers = [];
     Map<LatLng, MarkerData> markersDataList = {};
     API api;
@@ -53,6 +54,7 @@ class MarkerContoller {
             switch(markersDataList[point]!.state) {
               
               case MarkerState.pending:
+                selectedPoints.add(point);
                 markersDataList[point]!.state = MarkerState.selected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
               case MarkerState.selected:

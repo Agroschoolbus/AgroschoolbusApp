@@ -95,10 +95,12 @@ class _MyHomePageState extends State<MapPage> {
 
 
   Future<void> _fetchRoute() async {
-    if (_api.selectedPoints.length < 2) {
+    print("xaxaxaxa");
+    if (markerContoller.selectedPoints.length < 2) {
       return;
     }
     if (selectedPoints.isEmpty) {
+      osrm_api.selectedPoints = markerContoller.selectedPoints;
       List<List<double>> coordinates = await osrm_api.fetchDirections();
       setState(() {
         isDirectionsOn = true;
