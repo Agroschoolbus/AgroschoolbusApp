@@ -86,6 +86,7 @@ flutter:
   assets:
     - assets/icons/agro_icon.png
     - assets/icons/car.png
+    - assets/icons/factory.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

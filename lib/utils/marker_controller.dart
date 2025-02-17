@@ -22,7 +22,9 @@ class MarkerController {
       required this.onMarkersUpdated, 
       required this.api,
       required this.context
-    });
+    }) {
+      selectedPoints.add(LatLng(37.457002, 21.647583)); // factory coordinates
+    }
 
     void fetchMarkers() async {
       await api.fetchLatLngPoints().then((markers) {
@@ -87,7 +89,7 @@ class MarkerController {
         }
 
         selectedPoints = [];
-
+        selectedPoints.add(LatLng(37.457002, 21.647583));
         onMarkersUpdated();
     }
 

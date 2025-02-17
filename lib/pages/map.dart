@@ -212,6 +212,24 @@ class _MyHomePageState extends State<MapPage> {
     ];
   }
 
+  List<Marker> getFactoryMarker() {
+    return [
+      Marker(
+        point: LatLng(37.457002, 21.647583), 
+        width: 50,
+        height: 50,
+        child: Transform.rotate(
+                angle: 0,
+                child: Image.asset(
+                  'assets/icons/factory.png',
+                  width: 40.0,
+                  height: 40.0,
+                ),
+              ),
+      ),
+    ];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +269,7 @@ class _MyHomePageState extends State<MapPage> {
                 ),
                 MarkerLayer(
                   markers: [
+                    ...getFactoryMarker(),
                     ...markerController.customMarkers,
                     ...getCarMarker(),
                   ]
