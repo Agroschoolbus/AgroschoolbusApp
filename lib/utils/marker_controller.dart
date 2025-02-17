@@ -29,7 +29,8 @@ class MarkerController {
     void fetchMarkers() async {
       await api.fetchLatLngPoints().then((markers) {
           customMarkers = markers.map((item) {
-
+            // print(item);
+            final int id = item['id'];
             final latitude = double.parse(item['latitude']);
             final longitude = double.parse(item['longitude']);
             final status = item['status'].toString();
@@ -39,7 +40,7 @@ class MarkerController {
             // print(status);
 
             LatLng latLng = LatLng(latitude, longitude);
-            MarkerData markerData = MarkerData(point: latLng, buckets: buckets, userId: user, status: status);
+            MarkerData markerData = MarkerData(id: id, point: latLng, buckets: buckets, userId: user, status: status);
             markersDataList[latLng] = markerData;
 
             return buildPin(markerData);

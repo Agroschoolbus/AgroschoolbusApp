@@ -93,7 +93,7 @@ class API {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        
+
         return data;
       } else {
         throw Exception('Failed to load data');

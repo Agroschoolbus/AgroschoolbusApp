@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:agroschoolbus/utils/enum_types.dart';
 
 class MarkerData {
+  int id;
   LatLng point;
   int buckets;
   int userId;
@@ -13,6 +14,7 @@ class MarkerData {
   
 
   MarkerData({
+    required this.id,
     required this.point,
     required this.buckets,
     required this.userId,
