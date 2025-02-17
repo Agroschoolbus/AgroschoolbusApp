@@ -7,17 +7,18 @@ import './marker_data.dart';
 import '../services/api.dart';
 
 
-class MarkerContoller {
+class MarkerController {
 
     BuildContext context;
     List<LatLng> selectedPoints = [];
     List<Marker> customMarkers = [];
     Map<LatLng, MarkerData> markersDataList = {};
     API api;
+    bool isDirectionsOn = false;
 
     final VoidCallback onMarkersUpdated;
 
-    MarkerContoller({
+    MarkerController({
       required this.onMarkersUpdated, 
       required this.api,
       required this.context
@@ -47,7 +48,9 @@ class MarkerContoller {
 
 
     void tapOnMarker(LatLng point) {
-        
+        if (isDirectionsOn) {
+          return;
+        }
         for (int i = 0; i < customMarkers.length; i++) {
           if (customMarkers[i].point == point) {
             showDialogBox(markersDataList[point]!);

@@ -25,12 +25,11 @@ class MapPage extends StatefulWidget {
 
 class _MyHomePageState extends State<MapPage> {
 
-  late MarkerContoller markerContoller;
+  late MarkerController markerController;
   List<LatLng> selectedPoints = [];
   int showButtons = 0;
   int tileIndex = 0;
   int filterPins = 1;
-  bool isDirectionsOn = false;
   final MapController mapController = MapController();
   Stream<Position>? _positionStream;
   StreamSubscription<Position>? _positionSubscription;
@@ -83,10 +82,10 @@ class _MyHomePageState extends State<MapPage> {
 
     _api = API(context: context);
     osrm_api = OsrmApi();
-    markerContoller = MarkerContoller(onMarkersUpdated: () {
+    markerController = MarkerController(onMarkersUpdated: () {
       setState(() {});
     }, api: _api, context: context);
-    markerContoller.fetchMarkers();
+    markerController.fetchMarkers();
     
     
   }
@@ -98,27 +97,27 @@ class _MyHomePageState extends State<MapPage> {
     filterPins = opt;
     _api.setShowOption(opt);
 
-    markerContoller.fetchMarkers();
+    markerController.fetchMarkers();
   }
 
 
   Future<void> _fetchRoute() async {
     print("xaxaxaxa");
-    if (markerContoller.selectedPoints.length < 2) {
+    if (markerController.selectedPoints.length < 2) {
       return;
     }
     if (selectedPoints.isEmpty) {
-      osrm_api.selectedPoints = markerContoller.selectedPoints;
+      osrm_api.selectedPoints = markerController.selectedPoints;
       List<List<double>> coordinates = await osrm_api.fetchDirections();
       setState(() {
-        isDirectionsOn = true;
+        markerController.isDirectionsOn = true;
         selectedPoints = coordinates
             .map((coord) => LatLng(coord[0], coord[1]))
             .toList();
       });
     } else {
       setState(() {
-        isDirectionsOn = false;
+        markerController.isDirectionsOn = false;
         selectedPoints = [];
         
         //_api.selectedPoints = [];
@@ -181,8 +180,8 @@ class _MyHomePageState extends State<MapPage> {
       if ((routeStatus == 1 && status == 1) || status == 0) {
         routeStatus = 0;
         selectedPoints = [];
-        isDirectionsOn = false;
-        markerContoller.clearRoute();
+        markerController.isDirectionsOn = false;
+        markerController.clearRoute();
       }
       else {
         routeStatus = status;
@@ -252,7 +251,7 @@ class _MyHomePageState extends State<MapPage> {
                 ),
                 MarkerLayer(
                   markers: [
-                    ...markerContoller.customMarkers,
+                    ...markerController.customMarkers,
                     ...getCarMarker(),
                   ]
                 ),
@@ -395,7 +394,7 @@ class _MyHomePageState extends State<MapPage> {
               tooltip: 'Δημιουργία διαδρομής',
               child: Icon(
                 Icons.directions,
-                color: isDirectionsOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+                color: markerController.isDirectionsOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
                 ),
             ),
             const SizedBox(height: 10.0),
@@ -449,7 +448,7 @@ class _MyHomePageState extends State<MapPage> {
         )
       ),
 
-      if (isDirectionsOn)
+      if (markerController.isDirectionsOn)
       Positioned(
         bottom: 30.0,
         right: 80.0,
@@ -474,7 +473,7 @@ class _MyHomePageState extends State<MapPage> {
         )
       ),
 
-      if (isDirectionsOn && routeStatus < 1)
+      if (markerController.isDirectionsOn && routeStatus < 1)
       Positioned(
         bottom: 30.0,
         right: 20.0,
