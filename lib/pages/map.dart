@@ -101,8 +101,23 @@ class _MyHomePageState extends State<MapPage> {
   }
 
 
+  Future<void> _sendRouteInfo() async {
+    int res = await _api.sendRouteDetails(osrm_api.route);
+    print(res);
+    if (res == 0) {
+      print("Success");
+    }
+    if (res == 1) {
+      print("Issue 1");
+    }
+    if (res == 2) {
+      print("Issue 2");
+    }
+  }
+
+
   Future<void> _fetchRoute() async {
-    print("xaxaxaxa");
+    
     if (markerController.selectedPoints.length < 2) {
       return;
     }

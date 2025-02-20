@@ -12,6 +12,8 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 class OsrmApi {
   List<LatLng> selectedPoints = [];
   List<LatLng> directions = [];
+  String route = "";
+
 
 
   void clearSelectedPoints() {
@@ -96,6 +98,7 @@ class OsrmApi {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final encodedPolyline = data['trips'][0]['geometry'];
+        route = encodedPolyline;
         return decodePolyline(encodedPolyline);
         // parseOSRMResponse(data);
       }

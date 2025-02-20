@@ -12,6 +12,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class API {
   final BuildContext context;
+  String server = "http://147.102.160.160:8000";
   String pageText='';
   List<Marker> customMarkers = [];
   List<LatLng> selectedPoints = [];
@@ -75,10 +76,39 @@ class API {
     }
     
   }
+
+
+  Future<int> sendRouteDetails(String routeEncodedPolyline) async {
+    String baseUrl = server + '/route/1/';
+
+    try {
+      final uri = Uri.parse(baseUrl);
+
+      Map<String, String> obj = {
+        "data": routeEncodedPolyline
+      };
+
+      final response = await http.patch(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(obj),
+      );
+
+      if (response.statusCode == 200) {
+        return 0;
+      } else {
+        return 1; // Got an error status code
+      }
+    } catch (error) {
+      return 3; // Failed to connect to the API
+    }
+  }
   
 
   Future<List<dynamic>> fetchLatLngPoints() async {
-    const String baseUrl = 'http://147.102.160.160:8000/locations/locations/';
+    String baseUrl = server + '/locations/locations/';
 
     try {
       final uri = Uri.parse(baseUrl).replace(
