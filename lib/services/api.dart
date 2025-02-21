@@ -96,7 +96,7 @@ class API {
         body: jsonEncode(obj),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return 0;
       } else {
         return 1; // Got an error status code

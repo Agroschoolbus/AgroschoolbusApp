@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MapPage> {
   late LatLng cur = LatLng(37.4835, 21.6479);
 
   late UiController ui_ctrl;
+  bool isGPSOn = false;
 
 
   
@@ -122,7 +123,7 @@ class _MyHomePageState extends State<MapPage> {
         "title": "Παρουσιάστηκε πρόβλημα!",
         "message": "Η αρχικοποίηση της διαδρομής απέτυχε. Η απάντηση του διακομιστή δεν ήταν η αναμενόμενη.", 
         "onConfirm": () {
-          _setRouteStatus(0);
+          _enableOrDisableRoute(0);
         },
         "confirmText": "Κατάλαβα",
       };
@@ -132,7 +133,7 @@ class _MyHomePageState extends State<MapPage> {
         "title": "Παρουσιάστηκε πρόβλημα!",
         "message": "Η αρχικοποίηση της διαδρομής απέτυχε. Αδυναμία σύνδεσης στον διακομιστή.", 
         "onConfirm": () {
-          _setRouteStatus(0);
+          _enableOrDisableRoute(0);
         },
         "confirmText": "Κατάλαβα",
       };
@@ -195,6 +196,9 @@ class _MyHomePageState extends State<MapPage> {
           _currentPosition = position;
         });
       });
+      setState(() {
+        isGPSOn = true;
+      });
     } catch (e) {
       print("Error initializing location stream: $e");
     }
@@ -202,6 +206,10 @@ class _MyHomePageState extends State<MapPage> {
 
   void _stopListening() {
     if (_positionSubscription != null) {
+      setState(() {
+        isGPSOn = false;
+      });
+      
       _positionSubscription!.cancel();
       _positionSubscription = null;
     }
@@ -216,38 +224,48 @@ class _MyHomePageState extends State<MapPage> {
   }
 
 
-  void _setRouteStatus(int status) {
+  void _enableRoute() {
+    
+    dynamic obj = {
+      "title": "Εκκίνηση διαδρομής",
+      "message": "Πρόκειται να ξεκινήσετε μία νέα διαδρομή.",
+      "icon": Icons.warning, 
+      "confirmText": "Συνέχεια",
+      "cancelText": "Όχι",
+      "onCancel": () {
+        return;
+      },
+      "onConfirm": () {
+        setState(() {
+          routeStatus = 1;
+        });
+        _sendRouteInfo();
+        _setupLocationStream();
+      },
+    };
+    ui_ctrl.showDialogBox(obj);
+  }
+
+
+  void _disableRoute() {
+    _stopListening();
+    setState(() {
+      routeStatus = 0;
+      selectedPoints = [];
+      markerController.isDirectionsOn = false;
+      markerController.clearRoute();
+    });
+  }
+
+
+  void _enableOrDisableRoute(int status) {
     
       if ((routeStatus == 1 && status == 1) || status == 0) {
-        setState(() {
-          routeStatus = 0;
-          selectedPoints = [];
-          markerController.isDirectionsOn = false;
-          markerController.clearRoute();
-        });
+        _disableRoute();
       }
       else {
         // A new route is initiated
-        
-        dynamic obj = {
-          "title": "Εκκίνηση διαδρομής",
-          "message": "Πρόκειται να ξεκινήσετε μία νέα διαδρομή.",
-          "icon": Icons.warning, 
-          "confirmText": "Συνέχεια",
-          "cancelText": "Όχι",
-          "onCancel": () {
-            return;
-          },
-          "onConfirm": () {
-            setState(() {
-              routeStatus = status;
-            });
-            _sendRouteInfo();
-          },
-        };
-        ui_ctrl.showDialogBox(obj);
-        
-        
+        _enableRoute();
       }
   }
 
@@ -488,7 +506,10 @@ class _MyHomePageState extends State<MapPage> {
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "navigation",
               tooltip: 'Πλοήγηση',
-              child: const Icon(Icons.navigation),
+              child: Icon(
+                Icons.navigation,
+                color: isGPSOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+              ),
             ),
             const SizedBox(height: 10.0),
             FloatingActionButton(
@@ -537,7 +558,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                _setRouteStatus(1);
+                _enableOrDisableRoute(1);
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -562,7 +583,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                _setRouteStatus(0);
+                _enableOrDisableRoute(0);
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
