@@ -10,6 +10,7 @@ import '../services/api.dart';
 import '../services/gps.dart';
 
 import '../utils/marker_data.dart';
+import 'package:agroschoolbus/utils/ui_controller.dart';
 import 'package:agroschoolbus/utils/marker_controller.dart';
 
 // 729D37
@@ -35,6 +36,8 @@ class _MyHomePageState extends State<MapPage> {
   StreamSubscription<Position>? _positionSubscription;
   Position? _currentPosition;
   late LatLng cur = LatLng(37.4835, 21.6479);
+
+  late UiController ui_ctrl;
 
 
   
@@ -80,6 +83,7 @@ class _MyHomePageState extends State<MapPage> {
   void initState() {
     super.initState();
 
+    ui_ctrl = UiController(context: context);
     _api = API(context: context);
     osrm_api = OsrmApi();
     markerController = MarkerController(onMarkersUpdated: () {
@@ -104,15 +108,37 @@ class _MyHomePageState extends State<MapPage> {
   Future<void> _sendRouteInfo() async {
     int res = await _api.sendRouteDetails(osrm_api.route);
     print(res);
+    dynamic obj;
     if (res == 0) {
-      print("Success");
+      obj = {
+        "title": "Επιτυχία",
+        "message": "Η διαδρομή αρχικοποιήθηκε επιτυχώς. Οι λεπτομέρειες έφτασαν στον διακομιστή.", 
+      };
+      
     }
     if (res == 1) {
-      print("Issue 1");
+      
+      obj = {
+        "title": "Παρουσιάστηκε πρόβλημα!",
+        "message": "Η αρχικοποίηση της διαδρομής απέτυχε. Η απάντηση του διακομιστή δεν ήταν η αναμενόμενη.", 
+        "onConfirm": () {
+          _setRouteStatus(0);
+        },
+        "confirmText": "Κατάλαβα",
+      };
     }
     if (res == 2) {
-      print("Issue 2");
+      obj = {
+        "title": "Παρουσιάστηκε πρόβλημα!",
+        "message": "Η αρχικοποίηση της διαδρομής απέτυχε. Αδυναμία σύνδεσης στον διακομιστή.", 
+        "onConfirm": () {
+          _setRouteStatus(0);
+        },
+        "confirmText": "Κατάλαβα",
+      };
     }
+    
+    ui_ctrl.showDialogBox(obj);
   }
 
 
@@ -191,18 +217,38 @@ class _MyHomePageState extends State<MapPage> {
 
 
   void _setRouteStatus(int status) {
-    setState(() {
+    
       if ((routeStatus == 1 && status == 1) || status == 0) {
-        routeStatus = 0;
-        selectedPoints = [];
-        markerController.isDirectionsOn = false;
-        markerController.clearRoute();
+        setState(() {
+          routeStatus = 0;
+          selectedPoints = [];
+          markerController.isDirectionsOn = false;
+          markerController.clearRoute();
+        });
       }
       else {
-        routeStatus = status;
+        // A new route is initiated
+        
+        dynamic obj = {
+          "title": "Εκκίνηση διαδρομής",
+          "message": "Πρόκειται να ξεκινήσετε μία νέα διαδρομή.",
+          "icon": Icons.warning, 
+          "confirmText": "Συνέχεια",
+          "cancelText": "Όχι",
+          "onCancel": () {
+            return;
+          },
+          "onConfirm": () {
+            setState(() {
+              routeStatus = status;
+            });
+            _sendRouteInfo();
+          },
+        };
+        ui_ctrl.showDialogBox(obj);
+        
+        
       }
-      
-    });
   }
 
   
