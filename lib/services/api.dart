@@ -78,22 +78,20 @@ class API {
   }
 
 
-  Future<int> sendRouteDetails(String routeEncodedPolyline) async {
+  Future<int> sendRouteDetails(Map<String, dynamic> routeDetails) async {
     String baseUrl = server + '/route/1/';
 
     try {
       final uri = Uri.parse(baseUrl);
 
-      Map<String, String> obj = {
-        "data": routeEncodedPolyline
-      };
+      
 
       final response = await http.patch(
         uri,
         headers: {
           "Content-Type": "application/json",
         },
-        body: jsonEncode(obj),
+        body: jsonEncode(routeDetails),
       );
 
       if (response.statusCode == 200) {

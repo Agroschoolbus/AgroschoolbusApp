@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MapPage> {
 
   late UiController ui_ctrl;
   bool isGPSOn = false;
+  Timer? _locationTimer;
 
 
   
@@ -107,8 +108,14 @@ class _MyHomePageState extends State<MapPage> {
 
 
   Future<void> _sendRouteInfo() async {
-    int res = await _api.sendRouteDetails(osrm_api.route);
-    print(res);
+
+    Map<String, dynamic> routeDetails = {
+      "data": osrm_api.route,
+      // "latitude": _currentPosition?.latitude,
+      // "longitude": _currentPosition!.longitude
+    };
+    int res = await _api.sendRouteDetails(routeDetails);
+    
     dynamic obj;
     if (res == 0) {
       obj = {
@@ -187,6 +194,15 @@ class _MyHomePageState extends State<MapPage> {
     });
   }
 
+
+  void _startLocationTimer() {
+    _locationTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      if (_currentPosition != null) {
+        // _doSomethingWithPosition(_currentPosition!);
+      }
+    });
+  }
+
   Future<void> _setupLocationStream() async {
     try {
       // Await the stream initialization
@@ -212,6 +228,8 @@ class _MyHomePageState extends State<MapPage> {
       
       _positionSubscription!.cancel();
       _positionSubscription = null;
+      
+      _currentPosition = null;
     }
   }
 
@@ -235,12 +253,12 @@ class _MyHomePageState extends State<MapPage> {
       "onCancel": () {
         return;
       },
-      "onConfirm": () {
+      "onConfirm": () async {
         setState(() {
           routeStatus = 1;
         });
+        await _setupLocationStream();
         _sendRouteInfo();
-        _setupLocationStream();
       },
     };
     ui_ctrl.showDialogBox(obj);
@@ -264,7 +282,6 @@ class _MyHomePageState extends State<MapPage> {
         _disableRoute();
       }
       else {
-        // A new route is initiated
         _enableRoute();
       }
   }
