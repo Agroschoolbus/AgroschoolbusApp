@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MapPage> {
   late UiController ui_ctrl;
   bool isGPSOn = false;
   Timer? _locationTimer;
+  bool _isProcessingLocationUpdate = false; // to avoid overlapping calls when sending GPS point during navigation
 
 
   
@@ -92,6 +93,7 @@ class _MyHomePageState extends State<MapPage> {
       setState(() {});
     }, api: _api, context: context);
     markerController.fetchMarkers();
+    _startLocationTimer();
     
     
   }
@@ -108,12 +110,19 @@ class _MyHomePageState extends State<MapPage> {
 
 
   Future<void> _sendRouteInfo() async {
-
-    Map<String, dynamic> routeDetails = {
-      "data": osrm_api.route,
-      // "latitude": _currentPosition?.latitude,
-      // "longitude": _currentPosition!.longitude
-    };
+    Map<String, dynamic> routeDetails;
+    if (_currentPosition != null) {
+      routeDetails = {
+        "data": osrm_api.route,
+        "latitude": _currentPosition!.latitude,
+        "longitude": _currentPosition!.longitude
+      };
+    }
+    else {
+      routeDetails = {
+        "data": osrm_api.route,
+      };
+    }
     int res = await _api.sendRouteDetails(routeDetails);
     
     dynamic obj;
@@ -196,10 +205,28 @@ class _MyHomePageState extends State<MapPage> {
 
 
   void _startLocationTimer() {
-    _locationTimer = Timer.periodic(Duration(minutes: 1), (timer) {
-      if (_currentPosition != null) {
-        // _doSomethingWithPosition(_currentPosition!);
+    _locationTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
+
+      if (_isProcessingLocationUpdate || _currentPosition == null) return;
+      
+      _isProcessingLocationUpdate = true;
+
+      Map<String, dynamic> routeDetails = {
+        "data": osrm_api.route,
+        "latitude": _currentPosition!.latitude,
+        "longitude": _currentPosition!.longitude
+      };
+      await _api.sendRouteDetails(routeDetails);
+
+      try {
+        await _api.sendRouteDetails(routeDetails);
+      } catch (e) {
+        print("Error sending route details: $e");
+      } finally {
+        print("Yess");
+        _isProcessingLocationUpdate = false; 
       }
+      
     });
   }
 
@@ -273,6 +300,7 @@ class _MyHomePageState extends State<MapPage> {
       markerController.isDirectionsOn = false;
       markerController.clearRoute();
     });
+    _locationTimer?.cancel();
   }
 
 
