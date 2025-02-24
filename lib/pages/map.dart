@@ -219,11 +219,15 @@ class _MyHomePageState extends State<MapPage> {
       await _api.sendRouteDetails(routeDetails);
 
       try {
+        // throw Exception('Forced failure'); // Test catch block
         await _api.sendRouteDetails(routeDetails);
       } catch (e) {
-        print("Error sending route details: $e");
+        dynamic obj = {
+          "title": "Παρουσιάστηκε πρόβλημα",
+          "message": "Η τρέχουσα θέση δεν είναι δυνατό να ανανεωθεί στον διακομιστή.", 
+        };
+        ui_ctrl.showDialogBox(obj);
       } finally {
-        print("Yess");
         _isProcessingLocationUpdate = false; 
       }
       
@@ -260,13 +264,13 @@ class _MyHomePageState extends State<MapPage> {
     }
   }
 
-  void _togglePositionSubscription() {
-    if (_positionSubscription == null) {
-      _setupLocationStream();
-    } else {
-      _stopListening();
-    }
-  }
+  // void _togglePositionSubscription() {
+  //   if (_positionSubscription == null) {
+  //     _setupLocationStream();
+  //   } else {
+  //     _stopListening();
+  //   }
+  // }
 
 
   void _enableRoute() {
@@ -545,7 +549,7 @@ class _MyHomePageState extends State<MapPage> {
               onPressed: () {
                 // Center map action
                 // _fetchDirections();
-                _togglePositionSubscription();
+                // _togglePositionSubscription();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
