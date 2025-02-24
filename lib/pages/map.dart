@@ -162,6 +162,11 @@ class _MyHomePageState extends State<MapPage> {
   Future<void> _fetchRoute() async {
     
     if (markerController.selectedPoints.length < 2) {
+      dynamic obj = {
+        "title": "Ελάχιστα σημεία",
+        "message": "Πρέπει να επιλέξετε περισσότερα σημεία ενδιαφέροντος", 
+      };
+      ui_ctrl.showDialogBox(obj);
       return;
     }
     if (selectedPoints.isEmpty) {

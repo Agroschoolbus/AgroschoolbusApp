@@ -1,3 +1,3 @@
 
 
-enum MarkerState { pending, selected, collected }
+enum MarkerState { pending, selected, collected, delivered }

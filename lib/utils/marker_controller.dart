@@ -52,26 +52,39 @@ class MarkerController {
 
     void tapOnMarker(LatLng point) {
         if (isDirectionsOn) {
-          return;
-        }
-        for (int i = 0; i < customMarkers.length; i++) {
-          if (customMarkers[i].point == point) {
-            showDialogBox(markersDataList[point]!);
-            switch(markersDataList[point]!.state) {
-              
-              case MarkerState.pending:
+          for (int i = 0; i < customMarkers.length; i++) {
+            if (customMarkers[i].point == point) {
+              // showDialogBox(markersDataList[point]!);
+              if (markersDataList[point]!.state == MarkerState.selected) {
+                markersDataList[point]!.state = MarkerState.collected;
+                markersDataList[point]!.markerColor = const Color.fromARGB(255, 153, 153, 204);
+              }
+              else if (markersDataList[point]!.state == MarkerState.collected) {
+                markersDataList[point]!.state = MarkerState.selected;
+                markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
+              }
+
+              customMarkers[i] = buildPin(markersDataList[point]!);
+            }
+          }
+        } else {
+          for (int i = 0; i < customMarkers.length; i++) {
+            if (customMarkers[i].point == point) {
+              // showDialogBox(markersDataList[point]!);
+              if (markersDataList[point]!.state == MarkerState.pending) {
                 selectedPoints.add(point);
                 markersDataList[point]!.state = MarkerState.selected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
-              case MarkerState.selected:
-                markersDataList[point]!.state = MarkerState.collected;
-                markersDataList[point]!.markerColor = const Color.fromARGB(255, 46, 135, 1);
-              case MarkerState.collected:
+              }
+              else if (markersDataList[point]!.state == MarkerState.selected) {
+                selectedPoints.remove(point);
                 markersDataList[point]!.state = MarkerState.pending;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
-            }
+              }
+              // const Color.fromARGB(255, 46, 135, 1);
 
-            customMarkers[i] = buildPin(markersDataList[point]!);
+              customMarkers[i] = buildPin(markersDataList[point]!);
+            }
           }
         }
 
