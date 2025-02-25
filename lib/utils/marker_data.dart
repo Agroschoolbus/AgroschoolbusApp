@@ -30,7 +30,7 @@ class MarkerData {
       state = MarkerState.pending;
       markerColor = const Color.fromARGB(255, 201, 4, 4);
     } else if (status == "delivered") {
-      state = MarkerState.collected;
+      state = MarkerState.delivered;
       markerColor =const Color.fromARGB(255, 46, 135, 1);
     } else if (status == "collected") {
       state = MarkerState.collected;

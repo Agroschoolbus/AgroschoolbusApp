@@ -58,18 +58,12 @@ class MarkerController {
             if (customMarkers[i].point == point) {
               // showDialogBox(markersDataList[point]!);
               if (markersDataList[point]!.state == MarkerState.selected) {
-                dynamic pinDetails = {
-                  "status": "collected"
-                };
-                api.updatePinStatus(pinDetails, markersDataList[point]!.id);
+                updateMarkerDetailsOnServer(markersDataList[point]!.id, "collected");
                 markersDataList[point]!.state = MarkerState.collected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 153, 153, 204);
               }
               else if (markersDataList[point]!.state == MarkerState.collected) {
-                dynamic pinDetails = {
-                  "status": "selected"
-                };
-                api.updatePinStatus(pinDetails, markersDataList[point]!.id);
+                updateMarkerDetailsOnServer(markersDataList[point]!.id, "selected");
                 markersDataList[point]!.state = MarkerState.selected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
               }
@@ -83,10 +77,12 @@ class MarkerController {
               // showDialogBox(markersDataList[point]!);
               if (markersDataList[point]!.state == MarkerState.pending) {
                 selectedPoints.add(point);
+                updateMarkerDetailsOnServer(markersDataList[point]!.id, "selected");
                 markersDataList[point]!.state = MarkerState.selected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
               }
               else if (markersDataList[point]!.state == MarkerState.selected) {
+                updateMarkerDetailsOnServer(markersDataList[point]!.id, "pending");
                 selectedPoints.remove(point);
                 markersDataList[point]!.state = MarkerState.pending;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
@@ -102,10 +98,28 @@ class MarkerController {
     }
 
 
+    void cancelRoute() {
+      for (int i = 0; i < customMarkers.length; i++) {
+        print(markersDataList[customMarkers[i].point]!.state);
+        if (markersDataList[customMarkers[i].point]!.state == MarkerState.selected || markersDataList[customMarkers[i].point]!.state == MarkerState.collected) {
+          updateMarkerDetailsOnServer(markersDataList[customMarkers[i].point]!.id, "pending");
+          markersDataList[customMarkers[i].point]!.state = MarkerState.pending;
+          markersDataList[customMarkers[i].point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
+          customMarkers[i] = buildPin(markersDataList[customMarkers[i].point]!);
+        }
+      }
+
+      selectedPoints = [];
+      selectedPoints.add(LatLng(37.457002, 21.647583));
+      onMarkersUpdated();
+    }
+
+
     void clearRoute() {
         
         for (int i = 0; i < customMarkers.length; i++) {
           if (markersDataList[customMarkers[i].point]!.state == MarkerState.selected) {
+            updateMarkerDetailsOnServer(markersDataList[customMarkers[i].point]!.id, "pending");
             markersDataList[customMarkers[i].point]!.state = MarkerState.pending;
             markersDataList[customMarkers[i].point]!.markerColor = const Color.fromARGB(255, 201, 4, 4);
             customMarkers[i] = buildPin(markersDataList[customMarkers[i].point]!);
@@ -117,6 +131,13 @@ class MarkerController {
         onMarkersUpdated();
     }
 
+
+    void updateMarkerDetailsOnServer(int id, String status) {
+      dynamic pinDetails = {
+        "status": status
+      };
+      api.updatePinStatus(pinDetails, id);
+    }
 
 
 

@@ -312,6 +312,31 @@ class _MyHomePageState extends State<MapPage> {
     _locationTimer?.cancel();
   }
 
+  void cancelRoute() {
+    _stopListening();
+    setState(() {
+      routeStatus = 0;
+      selectedPoints = [];
+      markerController.isDirectionsOn = false;
+      markerController.cancelRoute();
+    });
+    _locationTimer?.cancel();
+  }
+
+  void cancelRouteRequest() {
+    dynamic obj = {
+      "title": "Ακύρωση διαδρομής",
+      "message": "Τα σημεία που συλλέχθηκαν θα θεωρηθούν ως μη συλλεχθέντα.", 
+      "onConfirm": () {
+        cancelRoute();
+      },
+      "confirmText": "Συνέχεια",
+      "onCancel": () {},
+      "onCancelText": "Άκυρο",
+    };
+    ui_ctrl.showDialogBox(obj);
+  }
+
 
   void _enableOrDisableRoute(int status) {
     
@@ -628,7 +653,7 @@ class _MyHomePageState extends State<MapPage> {
         )
       ),
 
-      if (markerController.isDirectionsOn && routeStatus < 1)
+      if (markerController.isDirectionsOn)
       Positioned(
         bottom: 30.0,
         right: 20.0,
@@ -637,7 +662,8 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                _enableOrDisableRoute(0);
+                cancelRouteRequest();
+                // _enableOrDisableRoute(0);
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
