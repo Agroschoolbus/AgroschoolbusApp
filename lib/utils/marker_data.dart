@@ -7,9 +7,11 @@ class MarkerData {
   int id;
   LatLng point;
   int buckets;
+  int bags;
   int userId;
   Color markerColor = const Color.fromARGB(255, 46, 135, 1);
   String status;
+  String mill;
   late MarkerState state;
   
 
@@ -17,17 +19,24 @@ class MarkerData {
     required this.id,
     required this.point,
     required this.buckets,
+    required this.bags,
+    required this.mill,
     required this.userId,
     required this.status,
   }) { initMarkerColor(); }
 
   void initMarkerColor() {
-    if (status == "false") {
+    if (status == "pending") {
       state = MarkerState.pending;
       markerColor = const Color.fromARGB(255, 201, 4, 4);
-    } else {
+    } else if (status == "delivered") {
       state = MarkerState.collected;
       markerColor =const Color.fromARGB(255, 46, 135, 1);
+    } else if (status == "collected") {
+      state = MarkerState.collected;
+      markerColor =const Color.fromARGB(255, 153, 153, 204);
+    } else {
+      markerColor = const Color.fromARGB(255, 21, 13, 253);
     }
   }
 

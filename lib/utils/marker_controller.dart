@@ -36,11 +36,13 @@ class MarkerController {
             final status = item['status'].toString();
             final int buckets = item['buckets'];
             final int user = item['user'];
+            final int bags = item['bags'];
+            final String mill = item['mill'];
 
             // print(status);
 
             LatLng latLng = LatLng(latitude, longitude);
-            MarkerData markerData = MarkerData(id: id, point: latLng, buckets: buckets, userId: user, status: status);
+            MarkerData markerData = MarkerData(id: id, point: latLng, buckets: buckets, userId: user, status: status, mill: mill, bags:bags);
             markersDataList[latLng] = markerData;
 
             return buildPin(markerData);
@@ -56,10 +58,18 @@ class MarkerController {
             if (customMarkers[i].point == point) {
               // showDialogBox(markersDataList[point]!);
               if (markersDataList[point]!.state == MarkerState.selected) {
+                dynamic pinDetails = {
+                  "status": "collected"
+                };
+                api.updatePinStatus(pinDetails, markersDataList[point]!.id);
                 markersDataList[point]!.state = MarkerState.collected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 153, 153, 204);
               }
               else if (markersDataList[point]!.state == MarkerState.collected) {
+                dynamic pinDetails = {
+                  "status": "selected"
+                };
+                api.updatePinStatus(pinDetails, markersDataList[point]!.id);
                 markersDataList[point]!.state = MarkerState.selected;
                 markersDataList[point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
               }

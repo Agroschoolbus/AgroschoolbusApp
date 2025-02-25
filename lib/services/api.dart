@@ -103,6 +103,33 @@ class API {
       return 3; // Failed to connect to the API
     }
   }
+
+
+  Future<int> updatePinStatus(Map<String, dynamic> pinDetails, int pinId) async {
+    String baseUrl = server + '/locations/locations/' + pinId.toString() + '/update/';
+
+    try {
+      final uri = Uri.parse(baseUrl);
+
+      
+
+      final response = await http.patch(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(pinDetails),
+      );
+
+      if (response.statusCode == 200) {
+        return 0;
+      } else {
+        return 1; // Got an error status code
+      }
+    } catch (error) {
+      return 3; // Failed to connect to the API
+    }
+  }
   
 
   Future<List<dynamic>> fetchLatLngPoints() async {
