@@ -15,6 +15,7 @@ class MarkerController {
     Map<LatLng, MarkerData> markersDataList = {};
     API api;
     bool isDirectionsOn = false;
+    bool allCollected = false;
 
     final VoidCallback onMarkersUpdated;
 
@@ -100,7 +101,6 @@ class MarkerController {
 
     void cancelRoute() {
       for (int i = 0; i < customMarkers.length; i++) {
-        print(markersDataList[customMarkers[i].point]!.state);
         if (markersDataList[customMarkers[i].point]!.state == MarkerState.selected || markersDataList[customMarkers[i].point]!.state == MarkerState.collected) {
           updateMarkerDetailsOnServer(markersDataList[customMarkers[i].point]!.id, "pending");
           markersDataList[customMarkers[i].point]!.state = MarkerState.pending;
@@ -115,9 +115,25 @@ class MarkerController {
     }
 
 
-    void clearRoute() {
+    void checkIfAllCollected() {
+      allCollected = true;
+      for (int i = 0; i < customMarkers.length; i++) {
+        if (markersDataList[customMarkers[i].point]!.state == MarkerState.selected) {
+          allCollected = false;
+        }
+      }
+    }
+
+
+    void completeRoute() {
         
         for (int i = 0; i < customMarkers.length; i++) {
+          if (markersDataList[customMarkers[i].point]!.state == MarkerState.collected) {
+            updateMarkerDetailsOnServer(markersDataList[customMarkers[i].point]!.id, "delivered");
+            markersDataList[customMarkers[i].point]!.state = MarkerState.delivered;
+            markersDataList[customMarkers[i].point]!.markerColor = const Color.fromARGB(255, 46, 135, 1);
+            customMarkers[i] = buildPin(markersDataList[customMarkers[i].point]!);
+          }
           if (markersDataList[customMarkers[i].point]!.state == MarkerState.selected) {
             updateMarkerDetailsOnServer(markersDataList[customMarkers[i].point]!.id, "pending");
             markersDataList[customMarkers[i].point]!.state = MarkerState.pending;

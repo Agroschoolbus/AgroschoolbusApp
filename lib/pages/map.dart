@@ -301,13 +301,13 @@ class _MyHomePageState extends State<MapPage> {
   }
 
 
-  void _disableRoute() {
+  void _completeRoute() {
     _stopListening();
     setState(() {
       routeStatus = 0;
       selectedPoints = [];
       markerController.isDirectionsOn = false;
-      markerController.clearRoute();
+      markerController.completeRoute();
     });
     _locationTimer?.cancel();
   }
@@ -337,11 +337,32 @@ class _MyHomePageState extends State<MapPage> {
     ui_ctrl.showDialogBox(obj);
   }
 
+  void completeRouteRequest() {
+    markerController.checkIfAllCollected();
+    String message;
+    if (!markerController.allCollected) {
+      message = "Δεν έχουν συλλεχθεί όλα τα σημεία. Θέλετε να ολοκληρώσετε τη διαδρομή παρ' όλα αυτά;";
+    } else {
+      message = "Πρόκειται να ολοκληρώσετε τη διαδρομή.";
+    }
+    dynamic obj = {
+      "title": "Ολοκλήρωση διαδρομής",
+      "message": message, 
+      "onConfirm": () {
+        _completeRoute();
+      },
+      "confirmText": "Συνέχεια",
+      "onCancel": () {},
+      "onCancelText": "Άκυρο",
+    };
+    ui_ctrl.showDialogBox(obj);
+  }
+
 
   void _enableOrDisableRoute(int status) {
     
       if ((routeStatus == 1 && status == 1) || status == 0) {
-        _disableRoute();
+        completeRouteRequest();
       }
       else {
         _enableRoute();
