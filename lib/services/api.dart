@@ -46,10 +46,10 @@ class API {
     return queryTomorrow;
   }
 
-  void setShowOption(int opt) {
+  void setShowOption(int opt, String userId) {
     if (opt == 1) {
       pageText = "Στον χάρτη παρουσιάζονται όλα τα δοχεία συλλογής";
-      query['user'] = '';
+      query['user'] = userId.toString();
       query['status'] = '';
       query['created_at__gte'] = '';
       query['created_at__lte'] = '';
@@ -59,7 +59,7 @@ class API {
       DateTime today = DateTime.now();
       String queryToday = getToday(today);
       String queryTomorrow = getTomorrow(today);
-      query['user'] = '';
+      query['user'] = userId.toString();
       query['status'] = '';
       query['created_at__gte'] = queryToday;
       query['created_at__lte'] = queryTomorrow;
@@ -69,7 +69,7 @@ class API {
       DateTime today = DateTime.now();
       String queryToday = getToday(today);
       String queryTomorrow = getTomorrow(today); 
-      query['user'] = '';
+      query['user'] = userId.toString();
       query['status'] = 'pending';
       query['created_at__gte'] = queryToday;
       query['created_at__lte'] = queryTomorrow;

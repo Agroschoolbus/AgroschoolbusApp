@@ -96,6 +96,7 @@ class _MyHomePageState extends State<MapPage> {
     markerController = MarkerController(onMarkersUpdated: () {
       setState(() {});
     }, api: _api, context: context);
+    _api.setShowOption(1, widget.userId);
     markerController.fetchMarkers();
   }
 
@@ -104,7 +105,7 @@ class _MyHomePageState extends State<MapPage> {
 
   void _setShowOption(int opt) {
     filterPins = opt;
-    _api.setShowOption(opt);
+    _api.setShowOption(opt, widget.userId);
 
     markerController.fetchMarkers();
   }
