@@ -39,6 +39,12 @@ class _MyHomePageState extends State<MapPage> {
   late UiController ui_ctrl;
   bool isGPSOn = false;
   bool isAddOn = false;
+
+
+  Position? _position;
+  LatLng? apiPosition;
+  
+  final GPS _gps = GPS();
   
 
   
@@ -149,6 +155,18 @@ class _MyHomePageState extends State<MapPage> {
         markerController.customMarkers = [];
       });
     }
+  }
+
+
+  void _getCurrentLocation() async {
+    Position position = await _gps.determinePosition();
+    setState(() {
+      _position = position;
+      apiPosition = LatLng(_position!.latitude, _position!.longitude);
+      if (_position != null) {
+        addSinglePin(LatLng(_position!.latitude.toDouble(), _position!.longitude.toDouble()));
+      }
+    });
   }
 
   
@@ -384,6 +402,7 @@ class _MyHomePageState extends State<MapPage> {
                 // Center map action
                 // _fetchDirections();
                 // _togglePositionSubscription();
+                _getCurrentLocation();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
