@@ -13,6 +13,7 @@ import '../utils/marker_data.dart';
 import 'package:agroschoolbus/utils/ui_controller.dart';
 import 'package:agroschoolbus/utils/marker_controller.dart';
 
+import 'dart:math';
 // 729D37
 
 class MapPage extends StatefulWidget {
@@ -40,10 +41,15 @@ class _MyHomePageState extends State<MapPage> {
   late UiController ui_ctrl;
   bool isGPSOn = false;
   Timer? _locationTimer;
+  Timer? _gpsSimulatorTimer;
+  Position? currentSimulatedPosition;
   bool _isProcessingLocationUpdate = false; // to avoid overlapping calls when sending GPS point during navigation
 
   int routePartIndex = 0;
+  double randomDouble = 0.0;
+  int tempIndex = 0;
 
+  bool mapZoomedForNavigation = false;
   
   // Timer? _timer;
   late API _api;
@@ -95,8 +101,6 @@ class _MyHomePageState extends State<MapPage> {
     }, api: _api, context: context);
     markerController.fetchMarkers();
     _startLocationTimer();
-    
-    
   }
 
   
@@ -247,6 +251,12 @@ class _MyHomePageState extends State<MapPage> {
       _positionSubscription = _positionStream!.listen((Position position) {
         setState(() {
           _currentPosition = position;
+          if (!mapZoomedForNavigation) {
+            mapController.move(LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 15);
+            mapZoomedForNavigation = true;
+          } else {
+            mapController.move(LatLng(_currentPosition!.latitude, _currentPosition!.longitude), mapController.camera.zoom);
+          }
         });
       });
       setState(() {
@@ -267,6 +277,7 @@ class _MyHomePageState extends State<MapPage> {
       _positionSubscription = null;
       
       _currentPosition = null;
+      centerMap();
     }
   }
 
@@ -296,6 +307,7 @@ class _MyHomePageState extends State<MapPage> {
         });
         await _setupLocationStream();
         _sendRouteInfo();
+        // startGPSSimulatorTimer();
       },
     };
     ui_ctrl.showDialogBox(obj);
@@ -382,10 +394,7 @@ class _MyHomePageState extends State<MapPage> {
 
     int start = routePartIndex * partSize;
     int end = start + partSize;
-    print(selectedPoints.length);
-    print(start);
-    print(end);
-    print(" ");
+    
     if (end > selectedPoints.length) {
       return selectedPoints.sublist(start, selectedPoints.length);
     }
@@ -398,6 +407,16 @@ class _MyHomePageState extends State<MapPage> {
       routePartIndex += 1;
       if (routePartIndex > 10) {
         routePartIndex = 10;
+      }
+    });
+  }
+
+  void _loadPreviousRoutePart() {
+    setState(() {
+      
+      routePartIndex -= 1;
+      if (routePartIndex < 0) {
+        routePartIndex = 0;
       }
     });
   }
@@ -441,6 +460,29 @@ class _MyHomePageState extends State<MapPage> {
     ];
   }
 
+
+  void centerMap() {
+    mapController.move(const LatLng(37.4835, 21.6479), 12.0);
+    mapZoomedForNavigation = false;
+  }
+  
+  
+  void startGPSSimulatorTimer() {
+    _gpsSimulatorTimer = Timer.periodic(Duration(seconds: 2), (timer) async {
+
+      LatLng p = selectedPoints[tempIndex];
+      if (!mapZoomedForNavigation) {
+        mapController.move(p, 15);
+        mapZoomedForNavigation = true;
+      } else {
+        mapController.move(p, mapController.camera.zoom);
+      }
+      tempIndex += 1;
+      if (tempIndex > selectedPoints.length) {
+        tempIndex = selectedPoints.length - 1;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -545,10 +587,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                mapController.move(
-                  const LatLng(37.4835, 21.6479),
-                  12.0,
-                );
+                centerMap();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -619,7 +658,34 @@ class _MyHomePageState extends State<MapPage> {
         left: 20.0,
         child: Column(
           children: [
-
+            if (routeStatus == 1)
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _loadPreviousRoutePart();
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "previousRoutePart",
+              tooltip: 'Προηγούμενο μέρος διαδρομής',
+              child: const Icon(Icons.skip_previous),
+            ),
+            if (routeStatus == 1)
+            const SizedBox(height: 10.0),
+            if (routeStatus == 1)
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _loadNextRoutePart();
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "routePart",
+              tooltip: 'Επόμενο μέρος διαδρομής',
+              child: const Icon(Icons.skip_next),
+            ),
+            if (routeStatus == 1)
+            const SizedBox(height: 20.0),
             FloatingActionButton(
               onPressed: () {
                 // Center map action
@@ -649,20 +715,6 @@ class _MyHomePageState extends State<MapPage> {
                 Icons.navigation,
                 color: isGPSOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
               ),
-            ),
-            if (routeStatus == 1)
-            const SizedBox(height: 10.0),
-            if (routeStatus == 1)
-            FloatingActionButton(
-              onPressed: () {
-                // Center map action
-                _loadNextRoutePart();
-              },
-              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-              heroTag: "routePart",
-              tooltip: 'Επόμενο μέρος διαδρομής',
-              child: const Icon(Icons.next_plan),
             ),
             const SizedBox(height: 10.0),
             FloatingActionButton(
