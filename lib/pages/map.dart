@@ -169,45 +169,23 @@ class _MyHomePageState extends State<MapPage> {
     });
   }
 
-  
 
-
-  
-
-
-  
-
-  
-
-  
-
-  
-
-
-  
-
-  
-    
+  void _getPinInfo() {
+    dynamic obj = {
+      "title": "Λεπτομέρειες σημείου",
+      "bucketsLabel": "Αριθμός κάδων",
+      "bagsLabel": "Αριθμός σάκων",
+      "dropdownOptions": ["Ελαιουργείο 1", "Ελαιουργείο 2", "Ελαιουργείο 3"],
+      "confirmText": "Αποστολή",
+      "cancelText": "Ακύρωση",
+      "onConfirm": (dynamic obj) {
+        print(obj);
+      }
+    };
+    ui_ctrl.showInputDialog(obj);
+  }
 
   
-
-  // List<Marker> getFactoryMarker() {
-  //   return [
-  //     Marker(
-  //       point: LatLng(37.457002, 21.647583), 
-  //       width: 50,
-  //       height: 50,
-  //       child: Transform.rotate(
-  //               angle: 0,
-  //               child: Image.asset(
-  //                 'assets/icons/factory.png',
-  //                 width: 40.0,
-  //                 height: 40.0,
-  //               ),
-  //             ),
-  //     ),
-  //   ];
-  // }
 
 
   @override
@@ -451,22 +429,24 @@ class _MyHomePageState extends State<MapPage> {
         )
       ),
 
-      if (markerController.isDirectionsOn)
+      if (markerController.pinAlreadyExists)
       Positioned(
         bottom: 30.0,
-        right: 80.0,
+        right: 10.0,
         child: Column(
           children: [
-            FloatingActionButton(
+            FloatingActionButton.extended(
               onPressed: () {
                 // Center map action
                 // _enableOrDisableRoute(1);
+                _getPinInfo();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-              heroTag: "start",
-              tooltip: 'Εκκίνηση',
-              child: Icon(
+              heroTag: "input",
+              tooltip: 'Εισαγωγή',
+              label: const Text('Προσθήκη'),
+              icon: Icon(
                 routeButton[routeStatus],
                 color: filterPins == 2 ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
               ),
