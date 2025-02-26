@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MapPage> {
   Timer? _locationTimer;
   bool _isProcessingLocationUpdate = false; // to avoid overlapping calls when sending GPS point during navigation
 
+  int routePartIndex = 0;
 
   
   // Timer? _timer;
@@ -310,6 +311,7 @@ class _MyHomePageState extends State<MapPage> {
       markerController.completeRoute();
     });
     _locationTimer?.cancel();
+    routePartIndex = 0;
   }
 
   void cancelRoute() {
@@ -321,6 +323,7 @@ class _MyHomePageState extends State<MapPage> {
       markerController.cancelRoute();
     });
     _locationTimer?.cancel();
+    routePartIndex = 0;
   }
 
   void cancelRouteRequest() {
@@ -369,6 +372,35 @@ class _MyHomePageState extends State<MapPage> {
       }
   }
 
+
+  List<LatLng> getPartOfRoute() {
+    if (selectedPoints.length == 0) {
+      return [];
+    }
+    double temp = selectedPoints.length / 10;
+    int partSize = temp.toInt();
+
+    int start = routePartIndex * partSize;
+    int end = start + partSize;
+    print(selectedPoints.length);
+    print(start);
+    print(end);
+    print(" ");
+    if (end > selectedPoints.length) {
+      return selectedPoints.sublist(start, selectedPoints.length);
+    }
+    return selectedPoints.sublist(start, end);
+  }
+
+  void _loadNextRoutePart() {
+    setState(() {
+      
+      routePartIndex += 1;
+      if (routePartIndex > 10) {
+        routePartIndex = 10;
+      }
+    });
+  }
   
     
 
@@ -455,6 +487,12 @@ class _MyHomePageState extends State<MapPage> {
                 ),
                 PolylineLayer(
                   polylines: [
+                    Polyline(
+                      points: getPartOfRoute(),
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                    if (routeStatus != 1)
                     Polyline(
                       points: selectedPoints,
                       color: Colors.blue,
@@ -581,6 +619,7 @@ class _MyHomePageState extends State<MapPage> {
         left: 20.0,
         child: Column(
           children: [
+
             FloatingActionButton(
               onPressed: () {
                 // Center map action
@@ -610,6 +649,20 @@ class _MyHomePageState extends State<MapPage> {
                 Icons.navigation,
                 color: isGPSOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
               ),
+            ),
+            if (routeStatus == 1)
+            const SizedBox(height: 10.0),
+            if (routeStatus == 1)
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                _loadNextRoutePart();
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "routePart",
+              tooltip: 'Επόμενο μέρος διαδρομής',
+              child: const Icon(Icons.next_plan),
             ),
             const SizedBox(height: 10.0),
             FloatingActionButton(
