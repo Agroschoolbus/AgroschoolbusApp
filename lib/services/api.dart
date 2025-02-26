@@ -130,6 +130,40 @@ class API {
       return 3; // Failed to connect to the API
     }
   }
+
+
+  Future<int> sendLocation(Map<String, dynamic> pinDetails) async {
+    var url = Uri.parse('http://147.102.160.160:8000/locations/add-location/');
+
+    
+    Map<String, String> body = {
+      "latitude": double.parse(pinDetails['latitude'].toStringAsFixed(6)).toString(),
+      "longitude": double.parse(pinDetails['longitude'].toStringAsFixed(6)).toString(),
+      "buckets": pinDetails['buckets'],
+      "bags": pinDetails['bags'],
+      "mill": pinDetails['mill'],
+      "user": pinDetails['userId'],
+    };
+
+    try {
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // var data = jsonDecode(response.body);
+        return 0;
+      } else {
+        return 1;
+      }
+    } catch (e) {
+      return 2;
+    }
+  }
   
 
   Future<List<dynamic>> fetchLatLngPoints() async {

@@ -16,9 +16,10 @@ import 'package:agroschoolbus/utils/marker_controller.dart';
 // 729D37
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key, required this.title});
+  const MapPage({super.key, required this.title, required this.userId});
 
   final String title;
+  final String userId;
 
   @override
   State<MapPage> createState() => _MyHomePageState();
@@ -88,6 +89,7 @@ class _MyHomePageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
+    
 
     ui_ctrl = UiController(context: context);
     _api = API(context: context);
@@ -147,6 +149,7 @@ class _MyHomePageState extends State<MapPage> {
     if (isAddOn) {
       setState(() {
         isAddOn = false;
+        markerController.addedMarkers = [];
         markerController.fetchMarkers();
       });
     } else {
@@ -179,13 +182,25 @@ class _MyHomePageState extends State<MapPage> {
       "confirmText": "Αποστολή",
       "cancelText": "Ακύρωση",
       "onConfirm": (dynamic obj) {
-        print(obj);
+        sendPinDetails(obj);
       }
     };
     ui_ctrl.showInputDialog(obj);
   }
 
   
+  void sendPinDetails(dynamic obj) {
+    dynamic pinDetails = {
+      "latitude": markerController.addedMarkers[0].point.latitude,
+      "longitude": markerController.addedMarkers[0].point.longitude,
+      "buckets": obj['buckets'],
+      "bags": obj['bags'],
+      "mill": "mill_1",
+      "userId": widget.userId
+    };
+    _api.sendLocation(pinDetails);
+    _enableAddLocation();
+  }
 
 
   @override

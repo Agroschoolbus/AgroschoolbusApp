@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
     // Get the text from the TextEditingController
     Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
+        MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page', userId: emailController.text)),
       );
     // String inputEmail = emailController.text;
     // String inputPass = passController.text;
