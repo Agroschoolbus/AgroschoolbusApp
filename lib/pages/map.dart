@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MapPage> {
   LatLng? apiPosition;
   
   final GPS _gps = GPS();
+
+  Timer? _refreshTimer; 
   
 
   
@@ -98,6 +100,7 @@ class _MyHomePageState extends State<MapPage> {
     }, api: _api, context: context);
     _api.setShowOption(1, widget.userId);
     markerController.fetchMarkers();
+    _startRefreshTimer();
   }
 
   
@@ -152,11 +155,13 @@ class _MyHomePageState extends State<MapPage> {
         isAddOn = false;
         markerController.addedMarkers = [];
         markerController.fetchMarkers();
+        _startRefreshTimer();
       });
     } else {
       setState(() {
         isAddOn = true;
         markerController.customMarkers = [];
+        _refreshTimer?.cancel();
       });
     }
   }
@@ -190,7 +195,7 @@ class _MyHomePageState extends State<MapPage> {
   }
 
   
-  void sendPinDetails(dynamic obj) {
+  void sendPinDetails(dynamic obj) async {
     dynamic pinDetails = {
       "latitude": markerController.addedMarkers[0].point.latitude,
       "longitude": markerController.addedMarkers[0].point.longitude,
@@ -199,10 +204,46 @@ class _MyHomePageState extends State<MapPage> {
       "mill": "mill_1",
       "userId": widget.userId
     };
-    _api.sendLocation(pinDetails);
+    int res = await _api.sendLocation(pinDetails);
+    showDialogOnSend(res);
     _enableAddLocation();
   }
 
+  void showDialogOnSend(int res) {
+    dynamic obj;
+    if (res == 0) {
+      obj = {
+        "title": "Επιτυχία",
+        "message": "Το νεό σημείο αποθηκεύτηκε στον διακομιστή", 
+      };
+    } else if (res == 1) {
+      obj = {
+        "title": "Παρουσιάστηκε πρόβλημα",
+        "message": "Ο διακομιστής απάντησε με μη αποδεκτό κωδικό.", 
+      };
+    } else {
+      obj = {
+        "title": "Παρουσιάστηκε πρόβλημα",
+        "message": "Αδυναμία σύνδεσης στον διακομιστή", 
+      };
+    }
+    ui_ctrl.showDialogBox(obj);
+  }
+
+
+  void _startRefreshTimer() {
+    _refreshTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
+      setState(() {
+        markerController.fetchMarkers();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel(); 
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
