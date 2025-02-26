@@ -172,13 +172,14 @@ class MarkerController {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                     Text(
-                    "UID: " + markerData.userId.toString() + " - B#: " + markerData.buckets.toString(),
-                    style: TextStyle(
-                        fontSize: 7,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        backgroundColor: Colors.white.withOpacity(0.7),
-                    ),
+                      "Παραγωγός: ${markerData.userId}\nΚάδοι: ${markerData.buckets},\n Σακιά: ${markerData.bags}",
+                      style: TextStyle(
+                          fontSize: 7,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          backgroundColor: Colors.white.withOpacity(0.7),
+                      ),
+                      textAlign: TextAlign.center
                     ),
                     Icon(
                     Icons.location_pin,
