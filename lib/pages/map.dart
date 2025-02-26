@@ -126,15 +126,30 @@ class _MyHomePageState extends State<MapPage> {
 
 
   void addSinglePin(LatLng point) {
-    if (!isAddOn) {
+    if (!isAddOn || markerController.pinAlreadyExists) {
       return;
     }
     setState(() {
       markerController.buildPinForProducer(point);
+      markerController.pinAlreadyExists = true;
     });
   }
 
   
+
+  void _enableAddLocation() {
+    if (isAddOn) {
+      setState(() {
+        isAddOn = false;
+        markerController.fetchMarkers();
+      });
+    } else {
+      setState(() {
+        isAddOn = true;
+        markerController.customMarkers = [];
+      });
+    }
+  }
 
   
 
@@ -352,15 +367,15 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                
+                _enableAddLocation();
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "directions",
               tooltip: 'Δημιουργία διαδρομής',
               child: Icon(
-                Icons.directions,
-                color: markerController.isDirectionsOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+                Icons.add_location_alt_outlined,
+                color: isAddOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
                 ),
             ),
             const SizedBox(height: 10.0),

@@ -17,6 +17,7 @@ class MarkerController {
     API api;
     bool isDirectionsOn = false;
     bool allCollected = false;
+    bool pinAlreadyExists = false;
 
     final VoidCallback onMarkersUpdated;
 
@@ -193,6 +194,12 @@ class MarkerController {
     }
 
 
+    void removeAddedMarker() {
+      addedMarkers = [];
+      pinAlreadyExists = false;
+      onMarkersUpdated();
+    }
+
     void buildPinForProducer(LatLng p) {
     
         // markerColors[point] =  Color.fromARGB(255, 46, 135, 1);
@@ -201,7 +208,9 @@ class MarkerController {
             width: 60,
             height: 60,
             child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  removeAddedMarker();
+                },
                 child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
