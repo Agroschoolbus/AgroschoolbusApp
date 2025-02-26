@@ -50,14 +50,14 @@ class _MyHomePageState extends State<MapPage> {
     Icons.menu,
     Icons.map,
     Icons.location_pin,
-    Icons.route,
+    Icons.add_location_alt_rounded,
   ];
 
   final List<Text> menuLabels = [
     const Text('Επιλογές'),
     const Text('Εργαλεία χάρτη'),
     const Text('Φίλτρα σημείων'),
-    const Text('Διαδρομή'),
+    const Text('Προσθήκη σημείου'),
   ];
 
   List<String> tileUrls = [
