@@ -32,21 +32,18 @@ class _MyHomePageState extends State<MapPage> {
   int tileIndex = 0;
   int filterPins = 1;
   final MapController mapController = MapController();
-  Stream<Position>? _positionStream;
-  StreamSubscription<Position>? _positionSubscription;
+  
   Position? _currentPosition;
   late LatLng cur = LatLng(37.4835, 21.6479);
 
   late UiController ui_ctrl;
   bool isGPSOn = false;
-  Timer? _locationTimer;
-  bool _isProcessingLocationUpdate = false; // to avoid overlapping calls when sending GPS point during navigation
-
+  bool isAddOn = false;
+  
 
   
   // Timer? _timer;
   late API _api;
-  late OsrmApi osrm_api;
 
 
   final List<IconData> menuIcons = [
@@ -88,14 +85,10 @@ class _MyHomePageState extends State<MapPage> {
 
     ui_ctrl = UiController(context: context);
     _api = API(context: context);
-    osrm_api = OsrmApi();
     markerController = MarkerController(onMarkersUpdated: () {
       setState(() {});
     }, api: _api, context: context);
     markerController.fetchMarkers();
-    _startLocationTimer();
-    
-    
   }
 
   
@@ -109,84 +102,7 @@ class _MyHomePageState extends State<MapPage> {
   }
 
 
-  Future<void> _sendRouteInfo() async {
-    Map<String, dynamic> routeDetails;
-    if (_currentPosition != null) {
-      routeDetails = {
-        "data": osrm_api.route,
-        "latitude": _currentPosition!.latitude,
-        "longitude": _currentPosition!.longitude
-      };
-    }
-    else {
-      routeDetails = {
-        "data": osrm_api.route,
-      };
-    }
-    int res = await _api.sendRouteDetails(routeDetails);
-    
-    dynamic obj;
-    if (res == 0) {
-      obj = {
-        "title": "Επιτυχία",
-        "message": "Η διαδρομή αρχικοποιήθηκε επιτυχώς. Οι λεπτομέρειες έφτασαν στον διακομιστή.", 
-      };
-      
-    }
-    if (res == 1) {
-      
-      obj = {
-        "title": "Παρουσιάστηκε πρόβλημα!",
-        "message": "Η αρχικοποίηση της διαδρομής απέτυχε. Η απάντηση του διακομιστή δεν ήταν η αναμενόμενη.", 
-        "onConfirm": () {
-          _enableOrDisableRoute(0);
-        },
-        "confirmText": "Κατάλαβα",
-      };
-    }
-    if (res == 2) {
-      obj = {
-        "title": "Παρουσιάστηκε πρόβλημα!",
-        "message": "Η αρχικοποίηση της διαδρομής απέτυχε. Αδυναμία σύνδεσης στον διακομιστή.", 
-        "onConfirm": () {
-          _enableOrDisableRoute(0);
-        },
-        "confirmText": "Κατάλαβα",
-      };
-    }
-    
-    ui_ctrl.showDialogBox(obj);
-  }
-
-
-  Future<void> _fetchRoute() async {
-    
-    if (markerController.selectedPoints.length < 2) {
-      dynamic obj = {
-        "title": "Ελάχιστα σημεία",
-        "message": "Πρέπει να επιλέξετε περισσότερα σημεία ενδιαφέροντος", 
-      };
-      ui_ctrl.showDialogBox(obj);
-      return;
-    }
-    if (selectedPoints.isEmpty) {
-      osrm_api.selectedPoints = markerController.selectedPoints;
-      List<List<double>> coordinates = await osrm_api.fetchDirections();
-      setState(() {
-        markerController.isDirectionsOn = true;
-        selectedPoints = coordinates
-            .map((coord) => LatLng(coord[0], coord[1]))
-            .toList();
-      });
-    } else {
-      setState(() {
-        markerController.isDirectionsOn = false;
-        selectedPoints = [];
-        
-        //_api.selectedPoints = [];
-      });
-    }
-  }
+  
 
   void _toggleButtons() {
     setState(() {
@@ -209,205 +125,56 @@ class _MyHomePageState extends State<MapPage> {
   }
 
 
-  void _startLocationTimer() {
-    _locationTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
-
-      if (_isProcessingLocationUpdate || _currentPosition == null) return;
-      
-      _isProcessingLocationUpdate = true;
-
-      Map<String, dynamic> routeDetails = {
-        "data": osrm_api.route,
-        "latitude": _currentPosition!.latitude,
-        "longitude": _currentPosition!.longitude
-      };
-      await _api.sendRouteDetails(routeDetails);
-
-      try {
-        // throw Exception('Forced failure'); // Test catch block
-        await _api.sendRouteDetails(routeDetails);
-      } catch (e) {
-        dynamic obj = {
-          "title": "Παρουσιάστηκε πρόβλημα",
-          "message": "Η τρέχουσα θέση δεν είναι δυνατό να ανανεωθεί στον διακομιστή.", 
-        };
-        ui_ctrl.showDialogBox(obj);
-      } finally {
-        _isProcessingLocationUpdate = false; 
-      }
-      
-    });
-  }
-
-  Future<void> _setupLocationStream() async {
-    try {
-      // Await the stream initialization
-      _positionStream = await initializeLocationStream();
-      _positionSubscription = _positionStream!.listen((Position position) {
-        setState(() {
-          _currentPosition = position;
-        });
-      });
-      setState(() {
-        isGPSOn = true;
-      });
-    } catch (e) {
-      print("Error initializing location stream: $e");
+  void addSinglePin(LatLng point) {
+    if (!isAddOn) {
+      return;
     }
-  }
-
-  void _stopListening() {
-    if (_positionSubscription != null) {
-      setState(() {
-        isGPSOn = false;
-      });
-      
-      _positionSubscription!.cancel();
-      _positionSubscription = null;
-      
-      _currentPosition = null;
-    }
-  }
-
-  // void _togglePositionSubscription() {
-  //   if (_positionSubscription == null) {
-  //     _setupLocationStream();
-  //   } else {
-  //     _stopListening();
-  //   }
-  // }
-
-
-  void _enableRoute() {
-    
-    dynamic obj = {
-      "title": "Εκκίνηση διαδρομής",
-      "message": "Πρόκειται να ξεκινήσετε μία νέα διαδρομή.",
-      "icon": Icons.warning, 
-      "confirmText": "Συνέχεια",
-      "cancelText": "Όχι",
-      "onCancel": () {
-        return;
-      },
-      "onConfirm": () async {
-        setState(() {
-          routeStatus = 1;
-        });
-        await _setupLocationStream();
-        _sendRouteInfo();
-      },
-    };
-    ui_ctrl.showDialogBox(obj);
-  }
-
-
-  void _completeRoute() {
-    _stopListening();
     setState(() {
-      routeStatus = 0;
-      selectedPoints = [];
-      markerController.isDirectionsOn = false;
-      markerController.completeRoute();
+      markerController.buildPinForProducer(point);
     });
-    _locationTimer?.cancel();
   }
 
-  void cancelRoute() {
-    _stopListening();
-    setState(() {
-      routeStatus = 0;
-      selectedPoints = [];
-      markerController.isDirectionsOn = false;
-      markerController.cancelRoute();
-    });
-    _locationTimer?.cancel();
-  }
+  
 
-  void cancelRouteRequest() {
-    dynamic obj = {
-      "title": "Ακύρωση διαδρομής",
-      "message": "Τα σημεία που συλλέχθηκαν θα θεωρηθούν ως μη συλλεχθέντα.", 
-      "onConfirm": () {
-        cancelRoute();
-      },
-      "confirmText": "Συνέχεια",
-      "onCancel": () {},
-      "onCancelText": "Άκυρο",
-    };
-    ui_ctrl.showDialogBox(obj);
-  }
-
-  void completeRouteRequest() {
-    markerController.checkIfAllCollected();
-    String message;
-    if (!markerController.allCollected) {
-      message = "Δεν έχουν συλλεχθεί όλα τα σημεία. Θέλετε να ολοκληρώσετε τη διαδρομή παρ' όλα αυτά;";
-    } else {
-      message = "Πρόκειται να ολοκληρώσετε τη διαδρομή.";
-    }
-    dynamic obj = {
-      "title": "Ολοκλήρωση διαδρομής",
-      "message": message, 
-      "onConfirm": () {
-        _completeRoute();
-      },
-      "confirmText": "Συνέχεια",
-      "onCancel": () {},
-      "onCancelText": "Άκυρο",
-    };
-    ui_ctrl.showDialogBox(obj);
-  }
+  
 
 
-  void _enableOrDisableRoute(int status) {
-    
-      if ((routeStatus == 1 && status == 1) || status == 0) {
-        completeRouteRequest();
-      }
-      else {
-        _enableRoute();
-      }
-  }
+  
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
 
   
     
 
-  List<Marker> getCarMarker() {
-    if (_currentPosition == null) return [];
-    return [
-      Marker(
-        point: LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 
-        width: 50,
-        height: 50,
-        child: Transform.rotate(
-                angle: _currentPosition!.heading, // Rotation in radians
-                child: Image.asset(
-                  'assets/icons/car.png',
-                  width: 40.0,
-                  height: 40.0,
-                ),
-              ),
-      ),
-    ];
-  }
+  
 
-  List<Marker> getFactoryMarker() {
-    return [
-      Marker(
-        point: LatLng(37.457002, 21.647583), 
-        width: 50,
-        height: 50,
-        child: Transform.rotate(
-                angle: 0,
-                child: Image.asset(
-                  'assets/icons/factory.png',
-                  width: 40.0,
-                  height: 40.0,
-                ),
-              ),
-      ),
-    ];
-  }
+  // List<Marker> getFactoryMarker() {
+  //   return [
+  //     Marker(
+  //       point: LatLng(37.457002, 21.647583), 
+  //       width: 50,
+  //       height: 50,
+  //       child: Transform.rotate(
+  //               angle: 0,
+  //               child: Image.asset(
+  //                 'assets/icons/factory.png',
+  //                 width: 40.0,
+  //                 height: 40.0,
+  //               ),
+  //             ),
+  //     ),
+  //   ];
+  // }
 
 
   @override
@@ -429,9 +196,10 @@ class _MyHomePageState extends State<MapPage> {
           Expanded(
             child: FlutterMap(
               mapController: mapController,
-              options: const MapOptions(
+              options: MapOptions(
                 initialCenter: LatLng(37.4835, 21.6479),
                 initialZoom: 12.0,
+                onTap: (_, p) => addSinglePin(p),
                 interactionOptions: InteractionOptions(
                   flags: ~InteractiveFlag.doubleTapZoom,
                 ),
@@ -448,9 +216,9 @@ class _MyHomePageState extends State<MapPage> {
                 ),
                 MarkerLayer(
                   markers: [
-                    ...getFactoryMarker(),
+                    // ...getFactoryMarker(),
                     ...markerController.customMarkers,
-                    ...getCarMarker(),
+                    ...markerController.addedMarkers
                   ]
                 ),
                 PolylineLayer(
@@ -584,7 +352,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                _fetchRoute();
+                
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -658,7 +426,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                _enableOrDisableRoute(1);
+                // _enableOrDisableRoute(1);
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -683,7 +451,7 @@ class _MyHomePageState extends State<MapPage> {
             FloatingActionButton(
               onPressed: () {
                 // Center map action
-                cancelRouteRequest();
+                // cancelRouteRequest();
                 // _enableOrDisableRoute(0);
               },
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),

@@ -12,6 +12,7 @@ class MarkerController {
     BuildContext context;
     List<LatLng> selectedPoints = [];
     List<Marker> customMarkers = [];
+    List<Marker> addedMarkers = []; // This is for the producer. It contains the added marker
     Map<LatLng, MarkerData> markersDataList = {};
     API api;
     bool isDirectionsOn = false;
@@ -189,6 +190,39 @@ class MarkerController {
                 ),
             ),
         );
+    }
+
+
+    void buildPinForProducer(LatLng p) {
+    
+        // markerColors[point] =  Color.fromARGB(255, 46, 135, 1);
+        addedMarkers.add(Marker(
+            point: p,
+            width: 60,
+            height: 60,
+            child: GestureDetector(
+                onTap: () {},
+                child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                    Text(
+                    "Νέο σημείο",
+                    style: TextStyle(
+                        fontSize: 7,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        backgroundColor: Colors.white.withOpacity(0.7),
+                    ),
+                    ),
+                    const Icon(
+                    Icons.location_pin,
+                    size: 30,
+                    color: Color.fromARGB(255, 201, 4, 4),
+                    ),
+                ],
+                ),
+            ),
+        ));
     }
 
 

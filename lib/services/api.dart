@@ -70,7 +70,7 @@ class API {
       String queryToday = getToday(today);
       String queryTomorrow = getTomorrow(today); 
       query['user'] = '';
-      query['status'] = 'False';
+      query['status'] = 'pending';
       query['created_at__gte'] = queryToday;
       query['created_at__lte'] = queryTomorrow;
     }
