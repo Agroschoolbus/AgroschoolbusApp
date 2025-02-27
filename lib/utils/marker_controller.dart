@@ -166,7 +166,7 @@ class MarkerController {
             height: 60,
             child: GestureDetector(
                 onTap: () {
-                tapOnMarker(markerData.point);
+                // tapOnMarker(markerData.point);
                 },
                 child: Column(
                 mainAxisSize: MainAxisSize.min,

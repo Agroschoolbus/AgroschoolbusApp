@@ -13,6 +13,9 @@ class OsrmApi {
   List<LatLng> selectedPoints = [];
   List<LatLng> directions = [];
   String route = "";
+  String routeStatus = "stopped";
+  double transporterLatitude = 37.4835;
+  double transporterLongitude = 21.6479;
 
 
 
@@ -75,6 +78,9 @@ class OsrmApi {
     return points.map((point) => [point.latitude, point.longitude]).toList();
   }
 
+
+  
+
   Future<List<List<double>>> fetchDirections() async {
     const osrm = 'http://147.102.160.160:5000/trip/v1/driving/';
 
@@ -105,6 +111,47 @@ class OsrmApi {
       
       // return directions;
       return [];
+    } catch (error) {
+      throw Exception('Failed to connect to the API: $error');
+    }
+  }
+
+  Future<List<List<double>>> fetchTransporterRoute() async {
+    String url = 'http://147.102.160.160:8000/route/1';
+
+    try {
+      final uri = Uri.parse(url);
+      final response = await http.get(uri);
+
+      
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final encodedPolyline = data['data'];
+        routeStatus = data['name'];
+        return decodePolyline(encodedPolyline);
+      }
+      
+      
+      return [];
+    } catch (error) {
+      throw Exception('Failed to connect to the API: $error');
+    }
+  }
+
+  void fetchTransporterPosition() async {
+    String url = 'http://147.102.160.160:8000/route/1';
+
+    try {
+      final uri = Uri.parse(url);
+      final response = await http.get(uri);
+
+      
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        transporterLatitude = double.parse(data['latitude']);
+        transporterLongitude = double.parse(data['longitude']);
+      }
+      
     } catch (error) {
       throw Exception('Failed to connect to the API: $error');
     }

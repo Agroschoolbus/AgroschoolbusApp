@@ -16,10 +16,12 @@ class _LoginPageState extends State<LoginPage> {
 
   void _getInput() {
     // Get the text from the TextEditingController
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
-      );
+    if (emailController.text == "agrobus@agrobus.gr" && passController.text == "agrobus"){
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
+        );
+    }
     // String inputEmail = emailController.text;
     // String inputPass = passController.text;
     // if (inputEmail == "itzortzis" && inputPass == "password") {

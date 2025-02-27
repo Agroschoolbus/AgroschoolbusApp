@@ -32,15 +32,14 @@ class _MyHomePageState extends State<MapPage> {
   int tileIndex = 0;
   int filterPins = 1;
   final MapController mapController = MapController();
-  Stream<Position>? _positionStream;
-  StreamSubscription<Position>? _positionSubscription;
   Position? _currentPosition;
   late LatLng cur = LatLng(37.4835, 21.6479);
 
   late UiController ui_ctrl;
   bool isGPSOn = false;
-  Timer? _locationTimer;
-  bool _isProcessingLocationUpdate = false; // to avoid overlapping calls when sending GPS point during navigation
+  Timer? _markersRefreshTimer;
+  Timer? _routeRefreshTimer;
+  Timer? _transporterPositionRefreshTimer;
 
 
   
@@ -93,11 +92,48 @@ class _MyHomePageState extends State<MapPage> {
       setState(() {});
     }, api: _api, context: context);
     markerController.fetchMarkers();
-    _startLocationTimer();
-    
-    
+    _startMarkersTimer();
+    _startRouteTimer();
+    _startTransporterPositionRefreshTimer();
   }
 
+  void _startMarkersTimer() {
+    _markersRefreshTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
+      markerController.fetchMarkers();
+    });
+  }
+
+  void _startTransporterPositionRefreshTimer() {
+    _transporterPositionRefreshTimer = Timer.periodic(Duration(seconds: 10), (timer) async {
+      osrm_api.fetchTransporterPosition();
+    });
+  }
+
+  void _startRouteTimer() async {
+    _routeRefreshTimer = Timer.periodic(Duration(seconds: 30), (timer) async {
+      
+      List<List<double>> coordinates = await osrm_api.fetchTransporterRoute();
+      if (osrm_api.routeStatus == "running") {
+        setState(() {
+          selectedPoints = coordinates
+              .map((coord) => LatLng(coord[0], coord[1]))
+              .toList();
+        });
+      } else {
+        setState(() {
+          selectedPoints = [];
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _markersRefreshTimer!.cancel();
+    _routeRefreshTimer!.cancel();
+    _transporterPositionRefreshTimer!.cancel();
+    super.dispose();
+  }
 
   void _setShowOption(int opt) {
     filterPins = opt;
@@ -130,58 +166,19 @@ class _MyHomePageState extends State<MapPage> {
       }
     });
   }
-
-
-  void _startLocationTimer() {
-    _locationTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
-
-      if (_isProcessingLocationUpdate || _currentPosition == null) return;
-      
-      _isProcessingLocationUpdate = true;
-
-      Map<String, dynamic> routeDetails = {
-        "data": osrm_api.route,
-        "latitude": _currentPosition!.latitude,
-        "longitude": _currentPosition!.longitude
-      };
-      await _api.sendRouteDetails(routeDetails);
-
-      try {
-        // throw Exception('Forced failure'); // Test catch block
-        await _api.sendRouteDetails(routeDetails);
-      } catch (e) {
-        dynamic obj = {
-          "title": "Παρουσιάστηκε πρόβλημα",
-          "message": "Η τρέχουσα θέση δεν είναι δυνατό να ανανεωθεί στον διακομιστή.", 
-        };
-        ui_ctrl.showDialogBox(obj);
-      } finally {
-        _isProcessingLocationUpdate = false; 
-      }
-      
-    });
-  }
-
-
-
-  
     
 
   List<Marker> getCarMarker() {
-    if (_currentPosition == null) return [];
+    if (osrm_api.routeStatus == "stopped") return [];
     return [
       Marker(
-        point: LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 
+        point: LatLng(osrm_api.transporterLatitude, osrm_api.transporterLongitude), 
         width: 50,
         height: 50,
-        child: Transform.rotate(
-                angle: _currentPosition!.heading, // Rotation in radians
-                child: Image.asset(
-                  'assets/icons/car.png',
-                  width: 40.0,
-                  height: 40.0,
+        child: const Icon(
+                  Icons.radio_button_checked_outlined,
+                  color: Color.fromARGB(255, 224, 7, 7),
                 ),
-              ),
       ),
     ];
   }
