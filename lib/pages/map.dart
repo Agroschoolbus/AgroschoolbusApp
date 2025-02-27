@@ -50,6 +50,9 @@ class _MyHomePageState extends State<MapPage> {
   int tempIndex = 0;
 
   bool mapZoomedForNavigation = false;
+  bool creatingNewPathOn = false;
+
+  List<LatLng> newPath = [];
   
   // Timer? _timer;
   late API _api;
@@ -286,6 +289,10 @@ class _MyHomePageState extends State<MapPage> {
           } else {
             mapController.move(LatLng(_currentPosition!.latitude, _currentPosition!.longitude), mapController.camera.zoom);
           }
+
+          if (creatingNewPathOn) {
+            newPath.add(LatLng(_currentPosition!.latitude, _currentPosition!.longitude));
+          }
         });
       });
       setState(() {
@@ -499,6 +506,19 @@ class _MyHomePageState extends State<MapPage> {
   void startGPSSimulatorTimer() {
     _gpsSimulatorTimer = Timer.periodic(Duration(seconds: 2), (timer) async {
 
+      // double latitude = 37.4835;
+      // double longitude = 21.6479;
+      // Random random = Random();
+      // double randomDouble;
+      // randomDouble = random.nextDouble();
+      // latitude += 0.01 * randomDouble;
+      // randomDouble = random.nextDouble();
+      // longitude += 0.01 * randomDouble;
+      // LatLng p = LatLng(latitude, longitude);
+      // setState(() {
+      //   newPath.add(p);
+      // });
+      
       LatLng p = selectedPoints[tempIndex];
       if (!mapZoomedForNavigation) {
         mapController.move(p, 15);
@@ -510,8 +530,53 @@ class _MyHomePageState extends State<MapPage> {
       if (tempIndex > selectedPoints.length) {
         tempIndex = selectedPoints.length - 1;
       }
+
+
     });
   }
+
+
+  void newPathCreation() {
+    if (creatingNewPathOn) {
+      if (_gpsSimulatorTimer != null) {
+        _gpsSimulatorTimer!.cancel();
+      }
+      newPath = [];
+      setState(() {
+        creatingNewPathOn = false;
+      });
+
+      dynamic obj = {
+        "title": "Αποθήκευση μονοπατιού",
+        "message": "Θέλετε να αποθηκεύσετε το νέο μονοπάτι;", 
+        "onConfirm": () {
+          
+        },
+        "confirmText": "Ναι",
+        "onCancel": () {},
+        "onCancelText": "Όχι",
+      };
+      ui_ctrl.showDialogBox(obj);
+    } else {
+      // startGPSSimulatorTimer();
+      dynamic obj = {
+        "title": "Δημιουργία νέου μονοπατιού",
+        "message": "Πρόκειται να εκκινηθεί η λειτουργία δημιουργίας νέου μονοπατιού.", 
+        "onConfirm": () {
+          setState(() {
+            creatingNewPathOn = true;
+          });
+        },
+        "confirmText": "Συνέχεια",
+        "onCancel": () {},
+        "onCancelText": "Άκυρο",
+      };
+      ui_ctrl.showDialogBox(obj);
+      
+    }
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -553,7 +618,7 @@ class _MyHomePageState extends State<MapPage> {
                   markers: [
                     ...getFactoryMarker(),
                     ...markerController.customMarkers,
-                    ...getCarMarker(),
+                    // ...getCarMarker(),
                   ]
                 ),
                 PolylineLayer(
@@ -567,6 +632,12 @@ class _MyHomePageState extends State<MapPage> {
                     Polyline(
                       points: selectedPoints,
                       color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                    if (creatingNewPathOn)
+                    Polyline(
+                      points: newPath,
+                      color: Color.fromARGB(255, 225, 103, 3),
                       strokeWidth: 4.0,
                     ),
                   ],
@@ -727,6 +798,21 @@ class _MyHomePageState extends State<MapPage> {
               child: const Icon(
                 Icons.display_settings_outlined,
                 color: Color.fromARGB(255, 255, 255, 255),
+                ),
+            ),
+            const SizedBox(height: 20.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                newPathCreation();
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "path creation",
+              tooltip: 'Δημιουργία νέου μονοπατιού',
+              child: Icon(
+                Icons.pattern_sharp,
+                color: creatingNewPathOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
                 ),
             ),
             const SizedBox(height: 10.0),
