@@ -55,6 +55,8 @@ class _MyHomePageState extends State<MapPage> {
   late API _api;
   late OsrmApi osrm_api;
 
+  int truckCapacity = 20;
+
 
   final List<IconData> menuIcons = [
     Icons.menu,
@@ -101,9 +103,38 @@ class _MyHomePageState extends State<MapPage> {
     }, api: _api, context: context);
     markerController.fetchMarkers();
     _startLocationTimer();
+    
+  }
+
+  bool _dialogShown = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getTruckCapacity();
+      });
+    }
+    
   }
 
   
+  void getTruckCapacity() {
+    dynamic obj = {
+      "title": "Χωρητικότητα φορτηγού",
+      "message": "Παρακαλώ, εισάγετε τη χωρητικότητα του φορτηγού σε μονάδες. Ένας κάδος αντιστοιχεί σε 1 μονάδα ενώ ένας σάκος σε 2.",
+      "capacityLabel": "Θετικός, ακέραιος αριθμός",
+      "cancelText": "Ακύρωση",
+      "onConfirm": (capacity) {
+        truckCapacity = int.parse(capacity);        
+      },
+      "ConfirmText": "Συνέχεια"
+    };
+    ui_ctrl.showInputDialog(obj);
+    print(truckCapacity);
+  }
 
 
   void _setShowOption(int opt) {
