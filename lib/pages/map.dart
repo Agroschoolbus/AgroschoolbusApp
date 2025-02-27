@@ -478,10 +478,9 @@ class _MyHomePageState extends State<MapPage> {
         height: 50,
         child: Transform.rotate(
                 angle: _currentPosition!.heading, // Rotation in radians
-                child: Image.asset(
-                  'assets/icons/car.png',
-                  width: 40.0,
-                  height: 40.0,
+                child: const Icon(
+                  Icons.radio_button_checked_outlined,
+                  color: Color.fromARGB(255, 224, 7, 7),
                 ),
               ),
       ),
@@ -628,7 +627,7 @@ class _MyHomePageState extends State<MapPage> {
                   markers: [
                     ...getFactoryMarker(),
                     ...markerController.customMarkers,
-                    // ...getCarMarker(),
+                    ...getCarMarker(),
                   ]
                 ),
                 PolylineLayer(
