@@ -150,6 +150,7 @@ class _MyHomePageState extends State<MapPage> {
     Map<String, dynamic> routeDetails;
     if (_currentPosition != null) {
       routeDetails = {
+        "name": "running",
         "data": osrm_api.route,
         "latitude": _currentPosition!.latitude,
         "longitude": _currentPosition!.longitude
@@ -157,6 +158,7 @@ class _MyHomePageState extends State<MapPage> {
     }
     else {
       routeDetails = {
+        "name": "running",
         "data": osrm_api.route,
       };
     }
@@ -350,7 +352,7 @@ class _MyHomePageState extends State<MapPage> {
   }
 
 
-  void _completeRoute() {
+  void _completeRoute() async {
     _stopListening();
     setState(() {
       routeStatus = 0;
@@ -360,9 +362,13 @@ class _MyHomePageState extends State<MapPage> {
     });
     _locationTimer?.cancel();
     routePartIndex = 0;
+    Map<String, dynamic> routeDetails = {
+      "name": "stopped"
+    };
+    await _api.sendRouteDetails(routeDetails);
   }
 
-  void cancelRoute() {
+  void cancelRoute() async {
     _stopListening();
     setState(() {
       routeStatus = 0;
@@ -372,6 +378,10 @@ class _MyHomePageState extends State<MapPage> {
     });
     _locationTimer?.cancel();
     routePartIndex = 0;
+    Map<String, dynamic> routeDetails = {
+      "name": "stopped"
+    };
+    await _api.sendRouteDetails(routeDetails);
   }
 
   void cancelRouteRequest() {
