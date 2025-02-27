@@ -74,3 +74,20 @@ class MarkerData {
     return bucketInfo;
   }
 }
+
+
+
+class MarkerToCollectData {
+  LatLng point;
+  int weight;
+  int ownerId;
+  double distance;
+
+  MarkerToCollectData({
+    required this.point,
+    required this.distance,
+    required this.ownerId,
+    required this.weight
+  });
+
+}

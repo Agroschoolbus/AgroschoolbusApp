@@ -55,8 +55,6 @@ class _MyHomePageState extends State<MapPage> {
   late API _api;
   late OsrmApi osrm_api;
 
-  int truckCapacity = 20;
-
 
   final List<IconData> menuIcons = [
     Icons.menu,
@@ -128,12 +126,12 @@ class _MyHomePageState extends State<MapPage> {
       "capacityLabel": "Θετικός, ακέραιος αριθμός",
       "cancelText": "Ακύρωση",
       "onConfirm": (capacity) {
-        truckCapacity = int.parse(capacity);        
+        markerController.truckCapacity = int.parse(capacity);        
       },
       "ConfirmText": "Συνέχεια"
     };
     ui_ctrl.showInputDialog(obj);
-    print(truckCapacity);
+    
   }
 
 
@@ -197,7 +195,7 @@ class _MyHomePageState extends State<MapPage> {
 
   Future<void> _fetchRoute() async {
     
-    if (markerController.selectedPoints.length < 2) {
+    if (markerController.selectedPoints.length < 1) {
       dynamic obj = {
         "title": "Ελάχιστα σημεία",
         "message": "Πρέπει να επιλέξετε περισσότερα σημεία ενδιαφέροντος", 
@@ -717,6 +715,37 @@ class _MyHomePageState extends State<MapPage> {
             ),
             if (routeStatus == 1)
             const SizedBox(height: 20.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                getTruckCapacity();
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "points",
+              tooltip: 'Αυτόματη επιλογή σημείων',
+              child: const Icon(
+                Icons.display_settings_outlined,
+                color: Color.fromARGB(255, 255, 255, 255),
+                ),
+            ),
+            const SizedBox(height: 10.0),
+            FloatingActionButton(
+              onPressed: () {
+                // Center map action
+                markerController.chooseMarkersToCollect();
+                _fetchRoute();
+              },
+              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              heroTag: "points",
+              tooltip: 'Αυτόματη επιλογή σημείων',
+              child: const Icon(
+                Icons.perm_data_setting_outlined,
+                color: Color.fromARGB(255, 255, 255, 255),
+                ),
+            ),
+            const SizedBox(height: 10.0),
             FloatingActionButton(
               onPressed: () {
                 // Center map action

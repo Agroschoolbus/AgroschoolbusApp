@@ -6,6 +6,8 @@ import 'package:agroschoolbus/utils/enum_types.dart';
 import './marker_data.dart';
 import '../services/api.dart';
 
+import 'dart:math';
+
 
 class MarkerController {
 
@@ -13,9 +15,11 @@ class MarkerController {
     List<LatLng> selectedPoints = [];
     List<Marker> customMarkers = [];
     Map<LatLng, MarkerData> markersDataList = {};
+    List<MarkerToCollectData> pendingMarkers = [];
     API api;
     bool isDirectionsOn = false;
     bool allCollected = false;
+    int truckCapacity = 20;
 
     final VoidCallback onMarkersUpdated;
 
@@ -49,6 +53,78 @@ class MarkerController {
             return buildPin(markerData);
           }).toList();
       });
+      onMarkersUpdated();
+    }
+
+
+    double calculateDistance(LatLng point1, LatLng point2) {
+      const double latScale = 111.32; 
+      const double lonScale = 111.32;
+
+      double dLat = point2.latitude - point1.latitude;
+      double dLon = point2.longitude - point1.longitude;
+      double latDistance = dLat * latScale;
+      double lonDistance = dLon * lonScale;
+
+      double distance = sqrt(latDistance * latDistance + lonDistance * lonDistance);
+      return distance;
+    }
+
+
+    void chooseMarkersToCollect() {
+      selectedPoints = [];
+      pendingMarkers = [];
+      selectedPoints.add(LatLng(37.457002, 21.647583)); // factory coordinates
+      LatLng p;
+      Map<LatLng, int> lupt = {};
+      for (int i = 0; i < customMarkers.length; i++) {
+        p = customMarkers[i].point;
+        if (markersDataList[p]!.state == MarkerState.pending) {
+          lupt[p] = i;
+          int weight = markersDataList[p]!.bags * 2 + markersDataList[p]!.buckets;
+          pendingMarkers.add(MarkerToCollectData(
+            point: p, 
+            distance: calculateDistance(p, LatLng(37.457002, 21.647583)), 
+            ownerId: markersDataList[p]!.userId, 
+            weight: weight));
+        }
+      }
+
+      Map<int, int> ownerCounts = {};
+
+      for (var item in pendingMarkers) {
+        ownerCounts[item.ownerId] = (ownerCounts[item.ownerId] ?? 0) + 1;
+      }
+
+      pendingMarkers.sort((a, b) {
+        int dComparison = a.distance.compareTo(b.distance);
+        if (dComparison != 0) {
+          return dComparison;
+        }
+        int ownerFreqA = ownerCounts[a.ownerId] ?? 0;
+        int ownerFreqB = ownerCounts[b.ownerId] ?? 0;
+
+        return ownerFreqA.compareTo(ownerFreqB);
+      });
+
+      int totalWeight = 0;
+      for (var item in pendingMarkers) {
+        if (totalWeight + item.weight <= truckCapacity) {
+          selectedPoints.add(item.point);
+          updateMarkerDetailsOnServer(markersDataList[item.point]!.id, "selected");
+          markersDataList[item.point]!.state = MarkerState.selected;
+          markersDataList[item.point]!.markerColor = const Color.fromARGB(255, 21, 13, 253);
+          totalWeight += item.weight;
+
+          customMarkers[lupt[item.point]!] = buildPin(markersDataList[item.point]!);
+
+          ownerCounts[item.ownerId] = (ownerCounts[item.ownerId] ?? 1) - 1;
+          if (ownerCounts[item.ownerId] == 0) {
+            ownerCounts.remove(item.ownerId);
+          }
+        }
+      }
+
       onMarkersUpdated();
     }
 
