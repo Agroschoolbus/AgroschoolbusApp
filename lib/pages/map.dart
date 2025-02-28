@@ -186,7 +186,7 @@ class _MyHomePageState extends State<MapPage> {
   List<Marker> getFactoryMarker() {
     return [
       Marker(
-        point: LatLng(37.457002, 21.647583), 
+        point: markerController.factoryLocation, 
         width: 50,
         height: 50,
         child: Transform.rotate(

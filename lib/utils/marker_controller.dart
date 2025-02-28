@@ -16,6 +16,7 @@ class MarkerController {
     API api;
     bool isDirectionsOn = false;
     bool allCollected = false;
+    LatLng factoryLocation = LatLng(37.423586, 21.667088);
 
     final VoidCallback onMarkersUpdated;
 
@@ -24,7 +25,7 @@ class MarkerController {
       required this.api,
       required this.context
     }) {
-      selectedPoints.add(LatLng(37.457002, 21.647583)); // factory coordinates
+      selectedPoints.add(factoryLocation); // factory coordinates
     }
 
     void fetchMarkers() async {
@@ -110,7 +111,7 @@ class MarkerController {
       }
 
       selectedPoints = [];
-      selectedPoints.add(LatLng(37.457002, 21.647583));
+      selectedPoints.add(factoryLocation);
       onMarkersUpdated();
     }
 
@@ -143,7 +144,7 @@ class MarkerController {
         }
 
         selectedPoints = [];
-        selectedPoints.add(LatLng(37.457002, 21.647583));
+        selectedPoints.add(factoryLocation);
         onMarkersUpdated();
     }
 
