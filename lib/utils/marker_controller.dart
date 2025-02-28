@@ -20,6 +20,7 @@ class MarkerController {
     bool isDirectionsOn = false;
     bool allCollected = false;
     int truckCapacity = 20;
+    LatLng factoryLocation = LatLng(37.423586, 21.667088);
 
     final VoidCallback onMarkersUpdated;
 
@@ -28,7 +29,7 @@ class MarkerController {
       required this.api,
       required this.context
     }) {
-      selectedPoints.add(LatLng(37.457002, 21.647583)); // factory coordinates
+      selectedPoints.add(factoryLocation); // factory coordinates
     }
 
     void fetchMarkers() async {
@@ -74,7 +75,7 @@ class MarkerController {
     void chooseMarkersToCollect() {
       selectedPoints = [];
       pendingMarkers = [];
-      selectedPoints.add(LatLng(37.457002, 21.647583)); // factory coordinates
+      selectedPoints.add(factoryLocation); // factory coordinates
       LatLng p;
       Map<LatLng, int> lupt = {};
       for (int i = 0; i < customMarkers.length; i++) {
@@ -84,7 +85,7 @@ class MarkerController {
           int weight = markersDataList[p]!.bags * 2 + markersDataList[p]!.buckets;
           pendingMarkers.add(MarkerToCollectData(
             point: p, 
-            distance: calculateDistance(p, LatLng(37.457002, 21.647583)), 
+            distance: calculateDistance(p, factoryLocation), 
             ownerId: markersDataList[p]!.userId, 
             weight: weight));
         }
@@ -186,7 +187,7 @@ class MarkerController {
       }
 
       selectedPoints = [];
-      selectedPoints.add(LatLng(37.457002, 21.647583));
+      selectedPoints.add(factoryLocation);
       onMarkersUpdated();
     }
 
@@ -219,7 +220,7 @@ class MarkerController {
         }
 
         selectedPoints = [];
-        selectedPoints.add(LatLng(37.457002, 21.647583));
+        selectedPoints.add(factoryLocation);
         onMarkersUpdated();
     }
 
