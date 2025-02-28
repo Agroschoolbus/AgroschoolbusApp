@@ -239,6 +239,24 @@ class _MyHomePageState extends State<MapPage> {
     });
   }
 
+  List<Marker> getFactoryMarker() {
+    return [
+      Marker(
+        point: markerController.factoryLocation, 
+        width: 50,
+        height: 50,
+        child: Transform.rotate(
+                angle: 0,
+                child: Image.asset(
+                  'assets/icons/factory.png',
+                  width: 40.0,
+                  height: 40.0,
+                ),
+              ),
+      ),
+    ];
+  }
+
   @override
   void dispose() {
     _refreshTimer?.cancel(); 
@@ -284,7 +302,7 @@ class _MyHomePageState extends State<MapPage> {
                 ),
                 MarkerLayer(
                   markers: [
-                    // ...getFactoryMarker(),
+                    ...getFactoryMarker(),
                     ...markerController.customMarkers,
                     ...markerController.addedMarkers
                   ]
