@@ -3,6 +3,7 @@
 
 # Agroschoolbus
 ## _Logistics system for the transportation of olives to the olive mill._
+This software was developed on behalf of [ICCS](https://www.iccs.gr/) for the project [Agroschoolbus](https://www.agroschoolbus.gr/)
 
 3 distinct applications
 
