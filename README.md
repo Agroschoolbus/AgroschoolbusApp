@@ -31,3 +31,23 @@ Source: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/transporter_v1
 - Display of POI status updates
 
 Source: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/factory_v1
+
+
+## Backend
+
+### Django API
+- Metadata of ROIs
+- Producer's info
+- Transporter's route info
+Source: https://github.com/Agroschoolbus/api
+
+
+## Technologies
+
+| Software | description | Link |
+| ------ | ------ | ------ |
+| Flutter | Applications | https://flutter.dev/ |
+| Django | Database - API | https://www.djangoproject.com/ |
+| OSRM | Routing engine | https://project-osrm.org/ |
+
+
