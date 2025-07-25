@@ -11,7 +11,7 @@
 -  Addition of new POIs manually or using GPS
 -  Display of the logged user's POIs status updates
 
-Source: [https://github.com/Agroschoolbus/AgroschoolbusApp/tree/transporter_v1](https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer)
+Source: [https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer](https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer)
 
 ### Transporter application
 - Display of POIs
