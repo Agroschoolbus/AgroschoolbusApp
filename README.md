@@ -1,25 +1,20 @@
-# AgroSchoolBus - Transporter App
 
-Application for organizing the collection of olive fruit.
+<img width="150" height="207" alt="AGROSCHOOL BUS LOGO 1-01_edited" src="https://github.com/user-attachments/assets/6c0aae28-247a-484f-bcaf-95585199acc6" />
 
-## Getting Started
-
-This will be a living document for tracking down the updates during the development.
-
-Current stage of the project:
-
- - Interactive openstreet maps
- - Addition of markers on tapping
- - Login page
- - Main page
- - Current GPS position
+# Agroschoolbus - Producer app
+## _Logistics system for the transportation of olives to the olive mill._
 
 
-<img width="200" alt="Screenshot 2024-10-10 at 2 25 09 PM" src="https://github.com/user-attachments/assets/61778869-912f-440c-b8b8-655c142dd5af">
+### Producer application
+-  Display of the logged user's POIs (Points of interest)
+-  Addition of new POIs manually or using GPS
+-  Display of the logged user's POIs status updates
 
-<img width="200" alt="Screenshot 2024-10-10 at 2 25 34 PM" src="https://github.com/user-attachments/assets/b135cf63-b719-4c62-9920-e87f6eb86776">
-<img width="200" alt="Screenshot 2024-10-10 at 2 26 11 PM" src="https://github.com/user-attachments/assets/dd37ec48-4f37-4938-99f4-b7ad666a43b4">
-<img width="200" alt="Screenshot 2024-05-31 at 10 37 50 PM" src="https://github.com/itzortzis/agroschoolbus/assets/105294556/8df6083c-9b24-4801-900c-61839183e6a1">
+Source: [https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer](https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer)
 
+## Samples screenshot
 
-<img width="200" alt="Screenshot 2024-06-01 at 12 32 52 AM" src="https://github.com/itzortzis/agroschoolbus/assets/105294556/fedabab4-2ac9-4f9d-b8fb-b3741ae41c4b">
+<img width="317" height="633" alt="prod_login" src="https://github.com/user-attachments/assets/037fa834-b1f9-4e85-8b31-1d0e4afce130" />
+<img width="320" height="654" alt="prod_all_items" src="https://github.com/user-attachments/assets/f08646ef-6a7e-4ac6-8193-49f2de1778af" />
+<img width="322" height="642" alt="prod_new_item" src="https://github.com/user-attachments/assets/19dda866-3519-488c-ac65-5729d1c130a2" />
+<img width="323" height="647" alt="prod_new_item_details" src="https://github.com/user-attachments/assets/78776d6a-4159-45e3-b8ab-3df768ec6f25" />
