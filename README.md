@@ -4,7 +4,6 @@
 # Agroschoolbus - Transporter App
 ## _Logistics system for the transportation of olives to the olive mill._
 
-3 distinct applications
 
 ### Transporter application
 - Display of POIs
