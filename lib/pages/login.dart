@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:agroschoolbus/pages/map.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../firebase_options.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +15,25 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  
+  
+
+  Future<User?> signUp(String email, String password) async {
+    
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: "itzortzis@mail.ntua.gr",
+        password: "giannis",
+      );
+      return userCredential.user;
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
 
 
   void _getInput() {
@@ -116,7 +138,8 @@ class _LoginPageState extends State<LoginPage> {
                 // Login Button
                 ElevatedButton(
                   onPressed: () {
-                    _getInput();
+                    // _getInput();
+                    signUp("", "");
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
