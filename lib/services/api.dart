@@ -164,6 +164,38 @@ class API {
       return 2;
     }
   }
+
+
+  Future<int> addUser(Map<String, dynamic> userDetails) async {
+    var url = Uri.parse('http://147.102.160.160:8000/locations/add-user/');
+
+    
+    Map<String, String> body = {
+      "id": userDetails["id"],
+      "name": userDetails['name'],
+      "lastname": userDetails['lastname'],
+      "username": userDetails['username']
+    };
+
+    try {
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // var data = jsonDecode(response.body);
+        return 0;
+      } else {
+        return 1;
+      }
+    } catch (e) {
+      return 2;
+    }
+  }
   
 
   Future<List<dynamic>> fetchLatLngPoints() async {

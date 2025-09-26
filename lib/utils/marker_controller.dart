@@ -40,7 +40,7 @@ class MarkerController {
             final longitude = double.parse(item['longitude']);
             final status = item['status'].toString();
             final int buckets = item['buckets'];
-            final int user = item['user'];
+            final String user = item['user'];
             final int bags = item['bags'];
             final String mill = item['mill'];
 
