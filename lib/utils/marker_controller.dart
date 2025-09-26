@@ -41,7 +41,7 @@ class MarkerController {
             final longitude = double.parse(item['longitude']);
             final status = item['status'].toString();
             final int buckets = item['buckets'];
-            final int user = item['user'];
+            final String user = item['user'];
             final int bags = item['bags'];
             final String mill = item['mill'];
 
@@ -91,7 +91,7 @@ class MarkerController {
         }
       }
 
-      Map<int, int> ownerCounts = {};
+      Map<String, int> ownerCounts = {};
 
       for (var item in pendingMarkers) {
         ownerCounts[item.ownerId] = (ownerCounts[item.ownerId] ?? 0) + 1;
@@ -249,7 +249,7 @@ class MarkerController {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                     Text(
-                      "Παραγωγός: ${markerData.userId}\nΚάδοι: ${markerData.buckets},\n Σακιά: ${markerData.bags}",
+                      "Παραγωγός: ${markerData.userId.substring(0, 4)}...\nΚάδοι: ${markerData.buckets},\n Σακιά: ${markerData.bags}",
                       style: TextStyle(
                           fontSize: 7,
                           color: Colors.black,

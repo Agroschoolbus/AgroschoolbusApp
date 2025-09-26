@@ -8,7 +8,7 @@ class MarkerData {
   LatLng point;
   int buckets;
   int bags;
-  int userId;
+  String userId;
   Color markerColor = const Color.fromARGB(255, 46, 135, 1);
   String status;
   String mill;
@@ -48,7 +48,7 @@ class MarkerData {
     this.buckets = buckets;
   }
 
-  int getUserId() {
+  String getUserId() {
     return userId;
   }
 
@@ -80,7 +80,7 @@ class MarkerData {
 class MarkerToCollectData {
   LatLng point;
   int weight;
-  int ownerId;
+  String ownerId;
   double distance;
 
   MarkerToCollectData({
