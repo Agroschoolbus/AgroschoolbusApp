@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:agroschoolbus/pages/map.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../firebase_options.dart';
+
+import 'package:flutter/gestures.dart';
+import '../services/api.dart';
+import 'package:agroschoolbus/utils/ui_controller.dart';
+
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,32 +21,77 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _getInput() {
-    // Get the text from the TextEditingController
-    if (emailController.text == "agrobus@agrobus.gr" && passController.text == "agrobus"){
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
-        );
-    }
-    // String inputEmail = emailController.text;
-    // String inputPass = passController.text;
-    // if (inputEmail == "itzortzis" && inputPass == "password") {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
-    //   );
-    // }
-    // else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Μη αποδεκτά στοιχεία εισόδου. Προσπαθήστε ξανά.'),
-    //       duration: Duration(seconds: 2),
-    //     ),
-    //   );
-    // }
+  late API _api;
+  late UiController ui_ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    ui_ctrl = UiController(context: context);
+    _api = API(context: context);
+  }
+  
+  
+  
+
+  // Future<User?> signUp(String email, String password) {
+  void signUp() {
+    dynamic obj = {
+      "title": "Εγγραφή",
+      "message": "Για εγγραφή νέου χρήστη, παρακαλώ επικοινωνήστε με τον διαχειριστή itzortzis@mail.ntua.gr", 
+    };
+    ui_ctrl.showDialogBox(obj);
+  }
     
+    // try {
+    //   UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+    //     email: "itzortzis@mail.ntua.gr",
+    //     password: "",
+    //   );
+    //   _api.addUser({
+    //     "name": "Yannis",
+    //     "lastname": "Tzortzis",
+    //     "username": "itzortzis",
+    //     "id": userCredential.user?.uid
+    //   });
+    //   print(userCredential.user?.uid);
+    //   return userCredential.user;
+    // } catch (e) {
+    //   print("Error: $e");
+    //   return null;
+    // }
+  
+
+
+  Future<User?> signIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return userCredential.user;
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
+
+
+  void _getInput() async{
+
+    User? user = await signIn(emailController.text, passController.text);
+    String userId = "";
+    userId = user?.uid ?? "";
+
+    if (userId != "") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
+      );
+    }
   }
 
   @override
@@ -112,6 +165,8 @@ class _LoginPageState extends State<LoginPage> {
                 ElevatedButton(
                   onPressed: () {
                     _getInput();
+                    // signUp("", "");
+
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -129,21 +184,47 @@ class _LoginPageState extends State<LoginPage> {
 
                 
 
-                const Text.rich(
-                  TextSpan(
-                    text: 'Αν δεν έχετε λογαριασμό, μπορείτε να κάνετε ', // Regular text
-                    style: TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 117, 117, 117),), // Default style
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'εγγραφή', 
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          ), // Bold text for "run"
-                      ),
-                    ],
+                // const Text.rich(
+                //   TextSpan(
+                //     text: 'Αν δεν έχετε λογαριασμό, μπορείτε να κάνετε ', // Regular text
+                //     style: TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 117, 117, 117),), // Default style
+                //     children: <TextSpan>[
+                //       TextSpan(
+                //         text: 'εγγραφή', 
+                //         style: TextStyle(
+                //           fontWeight: FontWeight.bold,
+                //           decoration: TextDecoration.underline,
+                //           ), // Bold text for "run"
+                //       ),
+                //     ],
+                //   ),
+                // ),
+
+                Text.rich(
+                TextSpan(
+                  text: 'Αν δεν έχετε λογαριασμό, μπορείτε να κάνετε ',
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    color: Color.fromARGB(255, 117, 117, 117),
                   ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'εγγραφή',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        // color: Colors.blue, // looks like a link
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          signUp();
+                          // For example, navigate to register page
+                          // Navigator.pushNamed(context, '/register');
+                        },
+                    ),
+                  ],
                 ),
+              ),
 
 
               ],
