@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MapPage> {
 
   void _setShowOption(int opt) {
     filterPins = opt;
-    _api.setShowOption(opt);
+    _api.setShowOption(opt, '');
 
     markerController.fetchMarkers();
   }
