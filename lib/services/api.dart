@@ -223,4 +223,25 @@ class API {
       throw Exception('Failed to connect to the API: $error');
     }
   }
+
+
+  Future<Map<String, dynamic>> fetchUserDetails(userId) async {
+    String baseUrl = server + '/locations/users/' + userId + '/';
+    print(baseUrl);
+
+    try {
+      final uri = Uri.parse(baseUrl);
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        return data;
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      throw Exception('Failed to connect to the API: $error');
+    }
+  }
 }

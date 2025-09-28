@@ -87,10 +87,14 @@ class _LoginPageState extends State<LoginPage> {
     userId = user?.uid ?? "";
 
     if (userId != "") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page', userId: userId)),
-      );
+      Map<String, dynamic> data = await _api.fetchUserDetails(userId);
+      
+      if (data["type"] == 'producer') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page', userId: userId)),
+        );
+      }
     }
   }
 
