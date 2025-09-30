@@ -152,14 +152,22 @@ class _MyHomePageState extends State<MapPage> {
   void _enableAddLocation() {
     if (isAddOn) {
       setState(() {
+        markerController.pinAlreadyExists = false;
         isAddOn = false;
+        print(isAddOn);
         markerController.addedMarkers = [];
         markerController.fetchMarkers();
         _startRefreshTimer();
       });
     } else {
       setState(() {
+        dynamic obj = {
+          "title": "Προσθήκη σημείου",
+          "message": "Προσθέστε νέο σημείο είτε χειροκίνητα είτε με χρήση GPS.", 
+        };
+        ui_ctrl.showDialogBox(obj);
         isAddOn = true;
+        print(isAddOn);
         markerController.customMarkers = [];
         _refreshTimer?.cancel();
       });
@@ -443,13 +451,14 @@ class _MyHomePageState extends State<MapPage> {
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "directions",
-              tooltip: 'Δημιουργία διαδρομής',
+              tooltip: 'Προσθήκη νέου σημείου',
               child: Icon(
                 Icons.add_location_alt_outlined,
                 color: isAddOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
                 ),
             ),
             const SizedBox(height: 10.0),
+            if (isAddOn)
             FloatingActionButton(
               onPressed: () {
                 // Center map action
@@ -460,7 +469,7 @@ class _MyHomePageState extends State<MapPage> {
               backgroundColor: const Color.fromARGB(255, 114, 157, 55),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               heroTag: "navigation",
-              tooltip: 'Πλοήγηση',
+              tooltip: 'Ενεργοποίηση GPS',
               child: Icon(
                 Icons.navigation,
                 color: isGPSOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
