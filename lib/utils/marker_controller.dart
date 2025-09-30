@@ -163,8 +163,8 @@ class MarkerController {
         // markerColors[point] =  Color.fromARGB(255, 46, 135, 1);
         return Marker(
             point: markerData.point,
-            width: 60,
-            height: 60,
+            width: 100,
+            height: 80,
             child: GestureDetector(
                 onTap: () {
                 // tapOnMarker(markerData.point);
@@ -172,15 +172,17 @@ class MarkerController {
                 child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Flexible(child:
                     Text(
-                    "UID: " + markerData.userId.toString() + " - B#: " + markerData.buckets.toString(),
+                    "UID: ${markerData.userId.toString().substring(0, 6)}...\n Κ#: ${markerData.buckets.toString()} Σ#: ${markerData.bags.toString()}",
                     style: TextStyle(
-                        fontSize: 7,
+                        fontSize: 10,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         backgroundColor: Colors.white.withOpacity(0.7),
                     ),
-                    ),
+                    textAlign: TextAlign.center,
+                    ),),
                     Icon(
                     Icons.location_pin,
                     size: 30,

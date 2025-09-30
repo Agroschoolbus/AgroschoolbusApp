@@ -373,37 +373,37 @@ class _MyHomePageState extends State<MapPage> {
         left: 20.0,
         child: Column(
           children: [
-            FloatingActionButton(
-              onPressed: () {
-                // Center map action
+            // FloatingActionButton(
+            //   onPressed: () {
+            //     // Center map action
               
-              },
-              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-              heroTag: "directions",
-              tooltip: 'Δημιουργία διαδρομής',
-              child: Icon(
-                Icons.directions,
-                color: markerController.isDirectionsOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
-                ),
-            ),
-            const SizedBox(height: 10.0),
-            FloatingActionButton(
-              onPressed: () {
-                // Center map action
-                // _fetchDirections();
-                // _togglePositionSubscription();
-              },
-              backgroundColor: const Color.fromARGB(255, 114, 157, 55),
-              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-              heroTag: "navigation",
-              tooltip: 'Πλοήγηση',
-              child: Icon(
-                Icons.navigation,
-                color: isGPSOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
-              ),
-            ),
-            const SizedBox(height: 10.0),
+            //   },
+            //   backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+            //   foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+            //   heroTag: "directions",
+            //   tooltip: 'Δημιουργία διαδρομής',
+            //   child: Icon(
+            //     Icons.directions,
+            //     color: markerController.isDirectionsOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+            //     ),
+            // ),
+            // const SizedBox(height: 10.0),
+            // FloatingActionButton(
+            //   onPressed: () {
+            //     // Center map action
+            //     // _fetchDirections();
+            //     // _togglePositionSubscription();
+            //   },
+            //   backgroundColor: const Color.fromARGB(255, 114, 157, 55),
+            //   foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+            //   heroTag: "navigation",
+            //   tooltip: 'Πλοήγηση',
+            //   child: Icon(
+            //     Icons.navigation,
+            //     color: isGPSOn ? Color.fromARGB(255, 250, 148, 6): Color.fromARGB(255, 255, 255, 255),
+            //   ),
+            // ),
+            // const SizedBox(height: 10.0),
             FloatingActionButton(
               onPressed: () {
                 // Center map action
