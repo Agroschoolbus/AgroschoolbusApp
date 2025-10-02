@@ -42,17 +42,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyA0YZKup_FiKCdJ8XlgvtGNQ8KmO1WruNQ',
-    appId: '1:326339310794:web:e00b702e6a5c0e01503033',
+    appId: '1:326339310794:web:d2c63686d72bd980503033',
     messagingSenderId: '326339310794',
     projectId: 'agroschoolbus',
     authDomain: 'agroschoolbus.firebaseapp.com',
     storageBucket: 'agroschoolbus.firebasestorage.app',
-    measurementId: 'G-1G58YFK7XF',
+    measurementId: 'G-X3DLSM4CPB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCASBRS3jvotuJCqNJxVNrGaT1i89ZPkec',
-    appId: '1:326339310794:android:f2094c896894e906503033',
+    appId: '1:326339310794:android:bbd312141fcf46b6503033',
     messagingSenderId: '326339310794',
     projectId: 'agroschoolbus',
     storageBucket: 'agroschoolbus.firebasestorage.app',
@@ -60,11 +60,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDMaE9QZvn7K3qKbkb5JaSGkXI0hMtDDEg',
-    appId: '1:326339310794:ios:f561a4545b3c1c57503033',
+    appId: '1:326339310794:ios:86cdb52e699f3813503033',
     messagingSenderId: '326339310794',
     projectId: 'agroschoolbus',
     storageBucket: 'agroschoolbus.firebasestorage.app',
-    iosBundleId: 'com.analogue.asbtransporter',
+    iosBundleId: 'com.analogue.agroschoolbus',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

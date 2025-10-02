@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:326339310794:android:f2094c896894e906503033",
+        "mobilesdk_app_id": "1:326339310794:android:bbd312141fcf46b6503033",
         "android_client_info": {
-          "package_name": "com.example.agroschoolbus"
+          "package_name": "com.analogue.agroschoolbus"
         }
       },
       "oauth_client": [],

@@ -1,5 +1,5 @@
 name: agroschoolbus
-description: "A new Flutter project."
+description: "Logistics system for the transportation of olives to the olive mill."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -67,12 +67,17 @@ dev_dependencies:
 flutter_launcher_icons:
   image_path: "assets/icons/agro_icon.png"
   android: "launcher_icon"
-  remove_alpha_ios: true
   ios: true
+  remove_alpha_ios: true
   min_sdk_android: 16 # android min sdk min:16, default 21
   macos:
+    generate: false
+    image_path: "assets/icons/agro_icon.png"
+  web:
     generate: true
     image_path: "assets/icons/agro_icon.png"
+  windows:
+    generate: false
   
 
 # The following section is specific to Flutter packages.

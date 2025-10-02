@@ -12,7 +12,8 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class API {
   final BuildContext context;
-  String server = "http://147.102.160.160:8000";
+  // String server = "http://147.102.160.160:8000";
+  String server = "https://pressoil.agroschoolbus.eu";
   String pageText='';
   List<Marker> customMarkers = [];
   List<LatLng> selectedPoints = [];
@@ -133,7 +134,7 @@ class API {
 
 
   Future<int> sendLocation(Map<String, dynamic> pinDetails) async {
-    var url = Uri.parse('http://147.102.160.160:8000/locations/add-location/');
+    var url = Uri.parse(server + '/locations/add-location/');
 
     
     Map<String, String> body = {
@@ -167,7 +168,7 @@ class API {
 
 
   Future<int> addUser(Map<String, dynamic> userDetails) async {
-    var url = Uri.parse('http://147.102.160.160:8000/locations/add-user/');
+    var url = Uri.parse(server + '/locations/add-user/');
 
     
     Map<String, String> body = {
