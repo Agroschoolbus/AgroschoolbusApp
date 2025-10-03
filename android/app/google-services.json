@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "326339310794",
+    "project_id": "agroschoolbus",
+    "storage_bucket": "agroschoolbus.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326339310794:android:bbd312141fcf46b6503033",
+        "android_client_info": {
+          "package_name": "com.analogue.agroschoolbus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCASBRS3jvotuJCqNJxVNrGaT1i89ZPkec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326339310794:android:97dc0f9e367dbb74503033",
+        "android_client_info": {
+          "package_name": "com.analogue.agroschoolbus_transporter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCASBRS3jvotuJCqNJxVNrGaT1i89ZPkec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
