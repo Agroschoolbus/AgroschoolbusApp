@@ -94,9 +94,23 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page')),
         );
+    } else {
+        dynamic obj = {
+          "title": "Πρόβλημα εισόδου",
+          "message": "Ο χρήστης δεν αντιστοιχεί στον ρόλο 'Μεταφορέας'.", 
+        };
+        ui_ctrl.showDialogBox(obj);
       }
+    } else {
+      dynamic obj = {
+        "title": "Πρόβλημα εισόδου",
+        "message": "Λανθασμένα στοιχεία εισόδου.", 
+      };
+      ui_ctrl.showDialogBox(obj);
     }
-  }
+  }      
+  
+
 
   @override
   Widget build(BuildContext context) {
