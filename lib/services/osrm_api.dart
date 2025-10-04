@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../utils/custom_marker.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 
@@ -76,11 +74,12 @@ class OsrmApi {
   }
 
   Future<List<List<double>>> fetchDirections() async {
-    const osrm = 'http://147.102.160.160:5000/trip/v1/driving/';
+    const osrm = 'https://pressoil.agroschoolbus.eu/osrm/trip/v1/driving/';
 
     
     String points = addPointsToString();
     String url = osrm + points;
+    print(url);
 
     try {
       final uri = Uri.parse(url).replace(
