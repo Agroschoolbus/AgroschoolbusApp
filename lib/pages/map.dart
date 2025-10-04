@@ -75,6 +75,7 @@ class _MyHomePageState extends State<MapPage> {
   ];
 
   int routeStatus = 0; 
+  late LatLng mapCenter = LatLng(37.4835, 21.6479);
   
 
   void fetch() async {
@@ -92,9 +93,21 @@ class _MyHomePageState extends State<MapPage> {
       setState(() {});
     }, api: _api, context: context);
     markerController.fetchMarkers();
+    _setMapCenter();
     _startMarkersTimer();
     _startRouteTimer();
     _startTransporterPositionRefreshTimer();
+  }
+
+  Future<void> _setMapCenter() async {
+    Map<String, dynamic> data = await _api.fetchAreaInfo();
+    LatLng center = LatLng(double.parse(data['center_lat']), double.parse(data['center_lon']));
+    LatLng millCenter = LatLng(double.parse(data['mill_lat']), double.parse(data['mill_lon']));
+    setState(() {
+      mapCenter = center;
+      markerController.factoryLocation = millCenter;
+    });
+    mapController.move(center, 12.0); // update map
   }
 
   void _startMarkersTimer() {
@@ -300,7 +313,7 @@ class _MyHomePageState extends State<MapPage> {
               onPressed: () {
                 // Center map action
                 mapController.move(
-                  const LatLng(37.4835, 21.6479),
+                  mapCenter,
                   12.0,
                 );
               },
