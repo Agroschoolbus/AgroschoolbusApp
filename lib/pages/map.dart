@@ -52,6 +52,8 @@ class _MyHomePageState extends State<MapPage> {
   bool mapZoomedForNavigation = false;
   bool creatingNewPathOn = false;
 
+  LatLng mapCenter = LatLng(37.4835, 21.6479);
+
   List<LatLng> newPath = [];
   
   // Timer? _timer;
@@ -103,9 +105,24 @@ class _MyHomePageState extends State<MapPage> {
       setState(() {});
     }, api: _api, context: context);
     markerController.fetchMarkers();
+    _setMapCenter();
     _startLocationTimer();
     
   }
+
+
+  Future<void> _setMapCenter() async {
+    Map<String, dynamic> data = await _api.fetchAreaInfo();
+    LatLng center = LatLng(double.parse(data['center_lat']), double.parse(data['center_lon']));
+    LatLng millCenter = LatLng(double.parse(data['mill_lat']), double.parse(data['mill_lon']));
+    setState(() {
+      mapCenter = center;
+      markerController.factoryLocation = millCenter;
+    });
+    mapController.move(mapCenter, 12.0); // update map
+  }
+
+
 
   bool _dialogShown = false;
   @override
@@ -507,7 +524,7 @@ class _MyHomePageState extends State<MapPage> {
 
 
   void centerMap() {
-    mapController.move(const LatLng(37.4835, 21.6479), 12.0);
+    mapController.move(mapCenter, 12.0);
     mapZoomedForNavigation = false;
   }
   
