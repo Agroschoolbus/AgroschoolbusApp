@@ -256,7 +256,7 @@ class _MyHomePageState extends State<MapPage> {
 
   void _changeTiles() {
     setState(() {
-      if (tileIndex == 2) {
+      if (tileIndex == 1) {
         tileIndex = 0;
       } else {
         tileIndex ++;
