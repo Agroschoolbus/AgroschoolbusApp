@@ -1,5 +1,4 @@
 
-import 'package:agroschoolbus/services/osrm_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,7 +8,6 @@ import 'dart:async';
 import '../services/api.dart';
 import '../services/gps.dart';
 
-import '../utils/marker_data.dart';
 import 'package:agroschoolbus/utils/ui_controller.dart';
 import 'package:agroschoolbus/utils/marker_controller.dart';
 
@@ -38,6 +36,7 @@ class _MyHomePageState extends State<MapPage> {
   late LatLng cur = LatLng(37.4835, 21.6479);
 
   late UiController ui_ctrl;
+  LatLng mapCenter = LatLng(37.4835, 21.6479);
   bool isGPSOn = false;
   bool isAddOn = false;
 
@@ -98,9 +97,22 @@ class _MyHomePageState extends State<MapPage> {
     markerController = MarkerController(onMarkersUpdated: () {
       setState(() {});
     }, api: _api, context: context);
+    _setMapCenter();
     _api.setShowOption(1, widget.userId);
     markerController.fetchMarkers();
     _startRefreshTimer();
+  }
+
+
+  Future<void> _setMapCenter() async {
+    Map<String, dynamic> data = await _api.fetchAreaInfo();
+    LatLng center = LatLng(double.parse(data['center_lat']), double.parse(data['center_lon']));
+    LatLng millCenter = LatLng(double.parse(data['mill_lat']), double.parse(data['mill_lon']));
+    setState(() {
+      mapCenter = center;
+      markerController.factoryLocation = millCenter;
+    });
+    mapController.move(center, 12.0); // update map
   }
 
   
@@ -291,7 +303,7 @@ class _MyHomePageState extends State<MapPage> {
             child: FlutterMap(
               mapController: mapController,
               options: MapOptions(
-                initialCenter: LatLng(37.4835, 21.6479),
+                initialCenter: mapCenter, //LatLng(37.4835, 21.6479),
                 initialZoom: 12.0,
                 onTap: (_, p) => addSinglePin(p),
                 interactionOptions: InteractionOptions(

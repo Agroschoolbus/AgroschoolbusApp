@@ -242,4 +242,27 @@ class API {
       throw Exception('Failed to connect to the API: $error');
     }
   }
+
+
+  Future<Map<String, dynamic>> fetchAreaInfo() async {
+    String url = '$server/route/1/';
+
+    try {
+      final uri = Uri.parse(url);
+      final response = await http.get(uri);
+      
+
+      
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        
+        return data;
+      } else {
+        throw Exception('Failed to load data');
+      }
+      
+    } catch (error) {
+      throw Exception('Failed to connect to the API: $error');
+    }
+  }
 }
