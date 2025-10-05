@@ -3,9 +3,17 @@ import 'package:agroschoolbus/pages/map.dart';
 import 'package:agroschoolbus/pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'package:agroschoolbus/firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    print('Firebase initialization error: $e');
+  }
   runApp(const MyApp());
 }
 

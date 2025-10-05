@@ -1,5 +1,5 @@
 name: agroschoolbus
-description: "A new Flutter project."
+description: "Logistics system for the transportation of olive buckets to olive mills"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -88,6 +88,7 @@ flutter:
     - assets/icons/agro_icon.png
     - assets/icons/car.png
     - assets/icons/factory.png
+    - assets/icons/footer.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
