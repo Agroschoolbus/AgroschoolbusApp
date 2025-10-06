@@ -3,10 +3,9 @@
 
 # Agroschoolbus
 
-## Σύστημα logistics για τη μεταφορά ελιών προς το ελαιοτριβείο.
+## Σύστημα logistics για την μεταφορά του ελαιόκαρπου στο ελαιοτριβείο
 
-Το λογισμικό αυτό αναπτύχθηκε εκ μέρους του ICCS
- για το έργο Agroschoolbus
+Το λογισμικό αυτό αναπτύχθηκε εκ μέρους του ICCS για το έργο Agroschoolbus
 
 3 διακριτές εφαρμογές
 
@@ -16,7 +15,7 @@
  - Προσθήκη νέων POIs χειροκίνητα ή με χρήση GPS
  - Εμφάνιση ενημερώσεων κατάστασης των POIs του συνδεδεμένου χρήστη
 
-Πηγή: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer
+Πηγαίος κώδικας: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer
 
 ### Εφαρμογή Μεταφορέα
 
@@ -27,7 +26,7 @@
  - Ενημέρωση κατάστασης των σημείων
  - Δημιουργία νέας διαδρομής σε περιοχές εκτός του χαρτογραφημένου οδικού δικτύου
 
-Πηγή: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/transporter_v1
+Πηγαίος κώδικας: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/transporter_v1
 
 ### Εφαρμογή Ελαιοτριβείου
 
@@ -36,7 +35,7 @@
  - Εποπτεία της τρέχουσας θέσης του μεταφορέα
  - Εμφάνιση ενημερώσεων κατάστασης των POIs
 
-Πηγή: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/factory_v1
+Πηγαίος κώδικας: https://github.com/Agroschoolbus/AgroschoolbusApp/tree/factory_v1
 
 
 ### Οδηγίες πρόσβασης:
@@ -46,7 +45,9 @@
  - Η ΨΕ του ρόλου "Μεταφορέας" διατίθεται μέσω της πλατφόρμας Google Play Store. Αντίστοιχα, καθώς βρίσκεται σε δοκιμαστική περίοδο, δεν είναι προσβάσιμη από όλους παρά μόνο στους αξιολογητές (testers). Τα αιτήματα για προσθήκη νέου αξιολογητή (tester) μπορούν να αποσταλούν στον Ιωάννη Τζώρτζη (itzortzis@mail.ntua.gr, i.n.tzortzis@gmail.com). Οι ενεργοί αξιολογητές έχουν πρόσβαση στην εφαρμογή μέσω του ακόλουθου συνδέσμου: https://play.google.com/store/apps/details?id=com.analogue.agroschoolbus_transporter
  - Για άμεση πρόσβαση, χωρίς αίτημα στον διαχειριστή, οι δοκιμαστικές εκδόσεις των ΨΕ των ρόλων "Ελαιοπαραγωγός" και "Μεταφορέας" βρίσκονται στο σχετικό δημόσιο αποθετήριο: https://github.com/Agroschoolbus/AgroschoolbusApp/releases 
  - Για τη χρήση των εφαρμογών είναι απαραίτητη η έκδοση των σχετικών διαπιστευτηρίων, τα οποία παρέχονται από τον Ιωάννη Τζώρτζη (itzortzis@mail.ntua.gr, i.n.tzortzis@gmail.com)
- - Η δημιουργία νέων διαπιστευτηρίων μπορεί να αποφευχθεί χρησιμοποιώντας προυπάρχοντες λογαριασμούς: producer_1@agrobus.gr (κωδικός: agrobus) και producer_2@agrobus.gr (κωδικός: agrobus) για την ΨΕ του ρόλου "Ελαιοπαραγωγός", transporter@agrobus.gr (κωδικός: agrobus), mill@agrobus.gr (κωδικός: agrobus) για την ΨΕ του ρόλου "Ελαιοτριβείο".
+
+
+# .
 
 ## _Logistics system for the transportation of olives to the olive mill._
 This software was developed on behalf of [ICCS](https://www.iccs.gr/) for the project [Agroschoolbus](https://www.agroschoolbus.gr/)
