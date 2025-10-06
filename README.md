@@ -18,3 +18,6 @@ Source: [https://github.com/Agroschoolbus/AgroschoolbusApp/tree/producer](https:
 <img width="320" height="654" alt="prod_all_items" src="https://github.com/user-attachments/assets/f08646ef-6a7e-4ac6-8193-49f2de1778af" />
 <img width="322" height="642" alt="prod_new_item" src="https://github.com/user-attachments/assets/19dda866-3519-488c-ac65-5729d1c130a2" />
 <img width="323" height="647" alt="prod_new_item_details" src="https://github.com/user-attachments/assets/78776d6a-4159-45e3-b8ab-3df768ec6f25" />
+
+#### With funding support from 
+<img width="650" height="507" alt="funding_logoa" src="pub-eu_image.webp"/>
