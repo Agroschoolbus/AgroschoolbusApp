@@ -51,4 +51,4 @@ Source: https://github.com/Agroschoolbus/api
 | Django | Database - API | https://www.djangoproject.com/ |
 | OSRM | Routing engine | https://project-osrm.org/ |
 
-
+![With Funding from] pub-eu_image.webp
