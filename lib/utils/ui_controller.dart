@@ -57,7 +57,7 @@ class UiController {
   }
 
 
-  void showInputDialog(Map<String, dynamic> obj) {
+  void showInputDialogProducer(Map<String, dynamic> obj) {
     TextEditingController bucketsInput = TextEditingController();
     TextEditingController bagsInput = TextEditingController();
     String dropdownValue = obj["dropdownOptions"]?[0] ?? "Ελαιουργείο 1"; 
@@ -128,5 +128,54 @@ class UiController {
       },
     );
   }
+
+
+
+    void showInputDialogTransporter(Map<String, dynamic> obj) {
+    TextEditingController truckCapacity = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(obj["title"] ?? "Χωρητικότητα φορτηγού"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (obj["message"] != null) Text(obj["message"]),
+                  TextField(
+                    controller: truckCapacity,
+                    decoration: InputDecoration(labelText: obj["capacityLabel"] ?? "Αριθμός"),
+                  ),
+                  
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text(obj["cancelText"] ?? "Cancel"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (obj["onConfirm"] is Function) {
+                      obj["onConfirm"](truckCapacity.text);
+                    }
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text(obj["confirmText"] ?? "OK"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
 
 }

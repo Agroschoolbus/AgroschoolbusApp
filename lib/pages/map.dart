@@ -211,7 +211,7 @@ class _MyHomePageState extends State<MapPage> {
         sendPinDetails(obj);
       }
     };
-    ui_ctrl.showInputDialog(obj);
+    ui_ctrl.showInputDialogProducer(obj);
   }
 
   

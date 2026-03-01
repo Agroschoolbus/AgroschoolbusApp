@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:agroschoolbus/pages/map.dart';
+import 'package:agroschoolbus/pages/map_transporter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase_options.dart';
 
@@ -93,6 +94,11 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MapPage(title: 'Map Page', userId: userId)),
+        );
+      } else if (data["type"] == 'transporter') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MapPageTransporter(title: 'Map Page')),
         );
       } else {
         dynamic obj = {
